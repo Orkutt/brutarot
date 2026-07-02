@@ -1,0 +1,59 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 3D-переворот карты — это не делается через Tailwind, нужен чистый CSS */
+.perspective {
+  perspective: 1000px;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s ease-in-out;
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+/* Анимация появления текста снизу */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+/* Пульсация колоды — намекает что надо нажать */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 12px 2px rgba(139, 92, 246, 0.4); }
+  50%       { box-shadow: 0 0 28px 6px rgba(139, 92, 246, 0.8); }
+}
+
+.deck-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
