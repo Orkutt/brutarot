@@ -6,43 +6,62 @@ from typing import Any
 
 CARDS_JSON_PATH = Path(__file__).parent.parent.parent.parent / "tarot-images.json"
 
+# Маппинг контекстов фронтенда → ключи в JSON
+CONTEXT_MAP = {
+    "relationships": "relationships",
+    "career":        "career",
+    "finance":       "finance",
+    "health":        "health",
+    "answer":        "answer",
+    "card_of_the_day": "card_of_the_day",
+    "advice":        "advice",
+}
 
 def load_cards() -> list[dict[str, Any]]:
     with open(CARDS_JSON_PATH, encoding="utf-8") as f:
         data = json.load(f)
-    # JSON — объект с ключом "cards", а не голый массив
     return data["cards"]
 
 
-def normalize_card(card: dict, is_reversed: bool) -> dict:
-    meanings = card.get("meanings", {})
+def get_interpretation(card: dict, is_reversed: bool, context: str) -> str:
+    """
+    Приоритет: сначала ищем конкретный контекст в meanings_by_context,
+    если поле пустое или контекст не передан — падаем на meanings_general.
+    """
+    position = "reversed" if is_reversed else "upright"
+    context_key = CONTEXT_MAP.get(context, "")
 
-    # light = прямое значение, shadow = перевёрнутое
-    light_list = meanings.get("light", [])
-    shadow_list = meanings.get("shadow", [])
+    # Пробуем контекстное значение
+    if context_key:
+        by_context = card.get("meanings_by_context", {})
+        position_dict = by_context.get(position, {})
+        value = position_dict.get(context_key, "").strip()
+        if value:
+            return value
 
-    # Берём все пункты и склеиваем в читаемый текст через точку с запятой
-    interpretation_upright = "; ".join(light_list) if light_list else "No interpretation available."
-    interpretation_reversed = "; ".join(shadow_list) if shadow_list else interpretation_upright
+    # Fallback: общее значение
+    general = card.get("meanings_general", {})
+    return general.get(position, "Интерпретация недоступна.").strip()
 
+
+def normalize_card(card: dict, is_reversed: bool, context: str) -> dict:
+    name = card.get("name", {})
     return {
-        "name": card.get("name", "Unknown"),
-        "number": card.get("number", ""),
-        "arcana": card.get("arcana", ""),
-        "suit": card.get("suit", ""),
-        "img": card.get("img", ""),
-        "keywords": card.get("keywords", []),
-        "fortune_telling": card.get("fortune_telling", []),
-        "interpretation": interpretation_reversed if is_reversed else interpretation_upright,
-        "reversed": is_reversed,
-        # Отдаём оба варианта — фронту может пригодиться
-        "meanings": {
-            "light": light_list,
-            "shadow": shadow_list,
-        },
-        "questions_to_ask": card.get("Questions to Ask", []),
-        "elemental": card.get("Elemental", ""),
-        "archetype": card.get("Archetype", ""),
+        "name_ru": name.get("ru", ""),
+        "name_en": name.get("en", ""),
+        "number":  card.get("number", ""),
+        "arcana":  card.get("arcana", ""),
+        "suit":    card.get("suit", ""),
+        "img":     card.get("img", ""),
+        "keywords":   card.get("keywords", []),
+        "numerology": card.get("Numerology", ""),
+        "elemental":  card.get("Elemental", ""),
+        "reversed":   is_reversed,
+        "context":    context,
+        "interpretation": get_interpretation(card, is_reversed, context),
+        "meaning_general": card.get("meanings_general", {}).get(
+            "reversed" if is_reversed else "upright", ""
+        ),
     }
 
 
@@ -55,8 +74,8 @@ def get_all_cards() -> list[dict]:
     return _cards
 
 
-def draw_random_card() -> dict:
+def draw_random_card(context: str = "") -> dict:
     cards = get_all_cards()
     card = random.choice(cards)
     is_reversed = random.random() > 0.5
-    return normalize_card(card, is_reversed)
+    return normalize_card(card, is_reversed, context)

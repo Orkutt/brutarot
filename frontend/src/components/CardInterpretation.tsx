@@ -1,20 +1,26 @@
 // src/components/CardInterpretation.tsx
-import { TarotCard } from '../types'
+import { TarotCard, CONTEXTS } from '../types'
 
 interface Props {
   card: TarotCard
 }
 
 export default function CardInterpretation({ card }: Props) {
-  return (
-    <div className="slide-up mt-6 space-y-4 text-center max-w-sm mx-auto">
+  // Находим лейбл выбранного контекста для заголовка блока
+  const contextLabel = CONTEXTS.find(c => c.key === card.context)?.label ?? ''
 
-      {/* Название и статус */}
-      <div>
-        <h2 className="text-2xl font-semibold text-white">
-          {card.name}
+  return (
+    <div className="slide-up mt-5 space-y-4 w-full max-w-sm mx-auto">
+
+      {/* Название карты */}
+      <div className="text-center">
+        <h2 className="text-xl font-semibold text-white">
+          {card.name_ru}
         </h2>
-        <p className="text-purple-400 text-sm mt-1">
+        <p className="text-slate-500 text-sm mt-0.5 italic">
+          {card.name_en}
+        </p>
+        <p className="text-purple-400 text-xs mt-1">
           {card.arcana} · {card.elemental}
           {card.reversed && (
             <span className="ml-2 text-rose-400">· Перевёрнутая</span>
@@ -24,11 +30,12 @@ export default function CardInterpretation({ card }: Props) {
 
       {/* Ключевые слова */}
       {card.keywords.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-2">
+        <div className="flex flex-wrap justify-center gap-1.5">
           {card.keywords.map(kw => (
             <span
               key={kw}
-              className="px-2 py-0.5 rounded-full bg-purple-900/60 text-purple-300 text-xs border border-purple-700/50"
+              className="px-2.5 py-0.5 rounded-full bg-purple-900/60 text-purple-300
+                         text-xs border border-purple-700/50"
             >
               {kw}
             </span>
@@ -36,46 +43,28 @@ export default function CardInterpretation({ card }: Props) {
         </div>
       )}
 
-      {/* Основная интерпретация */}
-      <div className="bg-slate-900/80 rounded-xl p-4 border border-slate-700/50 text-left">
-        <p className="text-slate-300 text-sm leading-relaxed">
+      {/* Общее значение карты */}
+      {card.meaning_general && (
+        <div className="bg-slate-900/80 rounded-xl p-4 border border-slate-700/50">
+          <p className="text-purple-400 text-xs uppercase tracking-wider mb-2">
+            Общее значение
+          </p>
+          <p className="text-slate-300 text-sm leading-relaxed">
+            {card.meaning_general}
+          </p>
+        </div>
+      )}
+
+      {/* Интерпретация по контексту — большое поле, текст может быть объёмным */}
+      <div className="bg-indigo-950/60 rounded-xl p-4 border border-indigo-800/50">
+        <p className="text-indigo-300 text-xs uppercase tracking-wider mb-2">
+          {contextLabel || 'Интерпретация'}
+        </p>
+        {/* min-h чтобы поле не сжималось на коротких текстах */}
+        <p className="text-slate-200 text-sm leading-relaxed min-h-[80px] whitespace-pre-line">
           {card.interpretation}
         </p>
       </div>
-
-      {/* Предсказания */}
-      {card.fortune_telling.length > 0 && (
-        <div className="text-left">
-          <p className="text-purple-400 text-xs uppercase tracking-wider mb-2">
-            Предсказание
-          </p>
-          <ul className="space-y-1">
-            {card.fortune_telling.map((ft, i) => (
-              <li key={i} className="text-slate-400 text-sm flex gap-2">
-                <span className="text-purple-600 mt-0.5">✦</span>
-                <span>{ft}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Вопросы для размышления */}
-      {card.questions_to_ask.length > 0 && (
-        <div className="text-left">
-          <p className="text-purple-400 text-xs uppercase tracking-wider mb-2">
-            Вопросы для размышления
-          </p>
-          <ul className="space-y-1">
-            {card.questions_to_ask.map((q, i) => (
-              <li key={i} className="text-slate-400 text-sm flex gap-2">
-                <span className="text-purple-600 mt-0.5">?</span>
-                <span>{q}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
     </div>
   )
