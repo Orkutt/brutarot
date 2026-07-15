@@ -1,27 +1,39 @@
 // src/components/ContextSelector.tsx
-import { CONTEXTS, ContextKey } from '../types'
+import { ContextKey } from '../types'
+
+// Тип одного элемента контекста — достаточно общий чтобы принять любой список
+interface ContextItem {
+  key: string
+  label: string
+  icon: string
+}
 
 interface Props {
+  contexts: readonly ContextItem[]          // ← список приходит снаружи
+  drawLabel?: string               // ← текст кнопки, по умолчанию "Вытащить карту"
   selected: ContextKey | null
   onChange: (key: ContextKey) => void
   onDraw: () => void
 }
 
-export default function ContextSelector({ selected, onChange, onDraw }: Props) {
+export default function ContextSelector({
+  contexts,
+  drawLabel = 'Вытащить карту',
+  selected,
+  onChange,
+  onDraw,
+}: Props) {
   return (
     <div className="w-full max-w-sm mx-auto flex flex-col gap-4 mt-4">
-      <p className="text-slate-400 text-sm text-center">
-        Выбери тему гадания
-      </p>
+      <p className="text-slate-400 text-sm text-center">Выбери тему гадания</p>
 
-      {/* Сетка кнопок-радио */}
       <div className="grid grid-cols-2 gap-2">
-        {CONTEXTS.map(({ key, label, icon }) => {
+        {contexts.map(({ key, label, icon }) => {
           const isSelected = selected === key
           return (
             <button
               key={key}
-              onClick={() => onChange(key)}
+              onClick={() => onChange(key as ContextKey)}
               className={`
                 flex items-center gap-2 px-3 py-2.5 rounded-xl border text-left text-sm
                 transition-all duration-200 active:scale-95
@@ -33,7 +45,6 @@ export default function ContextSelector({ selected, onChange, onDraw }: Props) {
             >
               <span className="text-base">{icon}</span>
               <span className="leading-tight">{label}</span>
-              {/* Точка-индикатор выбора */}
               <span className={`
                 ml-auto w-2 h-2 rounded-full flex-shrink-0 transition-all
                 ${isSelected ? 'bg-purple-400' : 'bg-slate-700'}
@@ -43,7 +54,6 @@ export default function ContextSelector({ selected, onChange, onDraw }: Props) {
         })}
       </div>
 
-      {/* Кнопка вытащить карту — активна только когда выбран контекст */}
       <button
         onClick={onDraw}
         disabled={!selected}
@@ -55,7 +65,7 @@ export default function ContextSelector({ selected, onChange, onDraw }: Props) {
           }
         `}
       >
-        {selected ? '🔮 Вытащить карту' : 'Сначала выбери тему'}
+        {selected ? `🔮 ${drawLabel}` : 'Сначала выбери тему'}
       </button>
     </div>
   )

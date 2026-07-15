@@ -1,14 +1,17 @@
 // src/App.tsx
 import { useEffect, useState } from 'react'
-import { useDrawCard } from './hooks/useDrawCard'
-import { ContextKey } from './types'
+import { Screen, ContextKey, CONTEXTS_SINGLE  } from './types'
+import MainMenu from './components/MainMenu'
 import ContextSelector from './components/ContextSelector'
 import TarotCard from './components/TarotCard'
 import CardInterpretation from './components/CardInterpretation'
+import TripleSpread from './components/TripleSpread'
+import { useDrawCard } from './hooks/useDrawCard'
 
 export default function App() {
-  const { card, status, error, draw, reset } = useDrawCard()
+  const [screen, setScreen] = useState<Screen>('menu')
   const [context, setContext] = useState<ContextKey | null>(null)
+  const { card, status, error, draw, reset } = useDrawCard()
 
   useEffect(() => {
     const webApp = window.Telegram?.WebApp
@@ -20,13 +23,10 @@ export default function App() {
     }
   }, [])
 
-  const handleDraw = () => {
-    if (context) draw(context)
-  }
-
-  const handleReset = () => {
+  const handleBackToMenu = () => {
+    setScreen('menu')
     reset()
-    // контекст оставляем выбранным — удобно гадать снова на ту же тему
+    setContext(null)
   }
 
   const isIdle     = status === 'idle'
@@ -34,27 +34,43 @@ export default function App() {
   const isFlipping = status === 'flipping' || status === 'done'
   const isDone     = status === 'done'
 
+  // Главное меню
+  if (screen === 'menu') {
+    return <MainMenu onSelect={setScreen} />
+  }
+
+  // Расклад триплет — полностью самостоятельный экран
+  if (screen === 'triple') {
+    return <TripleSpread onBack={handleBackToMenu} />
+  }
+
+  // Расклад одна карта
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col">
 
-      <header className="text-center pt-7 pb-3 px-4">
-        <h1 className="text-2xl font-semibold tracking-wide text-purple-300">
-          ✦ У ведьмы-гадалки ✦
+      <header className="flex items-center px-4 pt-6 pb-3 gap-3">
+        <button
+          onClick={handleBackToMenu}
+          className="text-slate-400 hover:text-white transition-colors text-sm"
+        >
+          ← Назад
+        </button>
+        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center pr-16">
+          ✦ Одна карта ✦
         </h1>
       </header>
 
       <main className="flex-1 flex flex-col items-center px-4 pb-10">
 
-        {/* Экран выбора темы + кнопка тянуть */}
         {isIdle && (
           <ContextSelector
+            contexts={CONTEXTS_SINGLE}   
             selected={context}
             onChange={setContext}
-            onDraw={handleDraw}
+            onDraw={() => context && draw(context)}
           />
         )}
 
-        {/* Загрузка */}
         {isLoading && (
           <div className="flex flex-col items-center gap-4 mt-10">
             <div className="w-60 h-96 rounded-2xl bg-slate-900 border-2 border-purple-800
@@ -68,18 +84,16 @@ export default function App() {
           </div>
         )}
 
-        {/* Карта + интерпретация */}
         {card && isFlipping && (
           <>
             <div className="mt-4">
               <TarotCard card={card} flipped={isFlipping} />
             </div>
-
             {isDone && (
               <>
                 <CardInterpretation card={card} />
                 <button
-                  onClick={handleReset}
+                  onClick={() => { reset(); setContext(null) }}
                   className="mt-6 px-6 py-2.5 rounded-xl border border-purple-700
                              text-purple-300 text-sm hover:bg-purple-900/40
                              active:scale-95 transition-all"
@@ -91,12 +105,11 @@ export default function App() {
           </>
         )}
 
-        {/* Ошибка */}
         {status === 'error' && (
           <div className="flex flex-col items-center gap-4 mt-10 text-center">
             <p className="text-rose-400 text-sm">{error}</p>
             <button
-              onClick={handleReset}
+              onClick={reset}
               className="px-6 py-2 rounded-xl bg-purple-800 text-white text-sm"
             >
               Попробовать снова

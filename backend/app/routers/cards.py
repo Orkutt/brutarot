@@ -1,6 +1,6 @@
 # app/routers/cards.py
 from fastapi import APIRouter, HTTPException, Query
-from app.services.card_service import draw_random_card, get_all_cards
+from app.services.card_service import draw_random_card, get_all_cards, draw_triple
 
 router = APIRouter(prefix="/api", tags=["cards"])
 
@@ -9,6 +9,13 @@ def draw_card(context: str = Query(default="", description="Контекст г�
     try:
         card = draw_random_card(context=context)
         return card
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/draw-triple")
+def draw_triple_endpoint(context: str = Query(default="")):
+    try:
+        return draw_triple(context=context)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

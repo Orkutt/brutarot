@@ -1,5 +1,5 @@
 // src/components/CardInterpretation.tsx
-import { TarotCard, CONTEXTS } from '../types'
+import { TarotCard, CONTEXTS_SINGLE } from '../types'
 
 interface Props {
   card: TarotCard
@@ -7,7 +7,7 @@ interface Props {
 
 export default function CardInterpretation({ card }: Props) {
   // Находим лейбл выбранного контекста для заголовка блока
-  const contextLabel = CONTEXTS.find(c => c.key === card.context)?.label ?? ''
+  const contextLabel = CONTEXTS_SINGLE.find(c => c.key === card.context)?.label ?? ''
 
   return (
     <div className="slide-up mt-5 space-y-4 w-full max-w-sm mx-auto">
