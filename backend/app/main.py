@@ -9,7 +9,7 @@ from fastapi.responses import FileResponse
 from app.bot import get_bot_and_dispatcher
 from app.routers import cards
 
-CARDS_IMAGES_PATH = Path(__file__).parent.parent.parent / "cards"
+CARDS_ROOT = Path(__file__).parent.parent.parent / "cards"
 
 FRONTEND_DIST = Path(__file__).parent.parent.parent / "frontend" / "dist"
 
@@ -40,11 +40,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Подключаем папку с картинками — они будут доступны по /cards/fool.jpg
-if CARDS_IMAGES_PATH.exists():
-    app.mount("/cards", StaticFiles(directory=CARDS_IMAGES_PATH), name="cards")
+# Раздаём всю папку cards — внутри могут быть classic/, botanical/ и т.д.
+if CARDS_ROOT.exists():
+    app.mount("/cards", StaticFiles(directory=CARDS_ROOT), name="cards")
 else:
-    print(f"⚠️  Папка с картами не найдена: {CARDS_IMAGES_PATH}")
+    print(f"⚠️  Папка с картами не найдена: {CARDS_ROOT}")
 
 # Подключаем роутер
 app.include_router(cards.router)

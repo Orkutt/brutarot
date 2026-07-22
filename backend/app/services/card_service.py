@@ -18,6 +18,18 @@ CONTEXT_MAP = {
     "advice":        "advice",
 }
 
+CONTEXT_LABELS = {
+    "one_card":      "Одна карта",
+    "card_of_the_day": "Карта дня",
+    "relationships": "Отношения и любовь",
+    "career":        "Работа и карьера",
+    "finance":       "Финансы",
+    "health":        "Здоровье",
+    "answer":        "Ответ на вопрос / Ситуация",
+    "advice":        "Совет",
+}
+
+
 def load_cards() -> list[dict[str, Any]]:
     with open(CARDS_JSON_PATH, encoding="utf-8") as f:
         data = json.load(f)
@@ -45,7 +57,7 @@ def get_interpretation(card: dict, is_reversed: bool, context: str) -> str:
     return general.get(position, "Интерпретация недоступна.").strip()
 
 
-def normalize_card(card: dict, is_reversed: bool, context: str) -> dict:
+def normalize_card(card: dict, is_reversed: bool, context: str, deck: str = "classic") -> dict:
     name = card.get("name", {})
     position = "reversed" if is_reversed else "upright"
     context_key = CONTEXT_MAP.get(context, "")
@@ -71,7 +83,7 @@ def normalize_card(card: dict, is_reversed: bool, context: str) -> dict:
         "number":   card.get("number", ""),
         "arcana":   card.get("arcana", ""),
         "suit":     card.get("suit", ""),
-        "img":      card.get("img", ""),
+        "img":      f"{deck}/{card.get('img', '')}",  # теперь путь включает папку колоды
         "keywords": card.get("keywords", []),
         "numerology": card.get("Numerology", ""),
         "elemental":  card.get("Elemental", ""),
@@ -83,6 +95,38 @@ def normalize_card(card: dict, is_reversed: bool, context: str) -> dict:
     }
 
 
+def build_llm_package(cards: list[dict], combos: dict, context: str) -> str:
+    """
+    Формирует текстовый пакет для LLM.
+    Структура: название, положение, общее значение, значение по запросу,
+    комбо с следующей картой (если есть).
+    """
+    context_label = CONTEXT_LABELS.get(context, context)
+    position_labels = ["Первая карта", "Вторая карта", "Третья карта"]
+    combo_keys = {1: "1-2", 2: "2-3"}  # после какой карты вставить комбо
+
+    lines = [f"Контекст гадания: {context_label}\n"]
+
+    for i, card in enumerate(cards):
+        pos_label = position_labels[i]
+        reversed_label = "перевёрнутая" if card["reversed"] else "прямая"
+
+        lines.append(f"{pos_label}: {card['name_ru']} ({card['name_en']})")
+        lines.append(f"Положение: {reversed_label}")
+        lines.append(f"Общее значение: {card['meaning_general']}")
+
+        if card.get("meanings_by_context_value"):
+            lines.append(f"Значение по запросу ({context_label}): {card['meanings_by_context_value']}")
+
+        # Комбо между этой и следующей картой
+        combo_key = combo_keys.get(i + 1)
+        if combo_key and combo_key in combos:
+            lines.append(f"Взаимодействие с следующей картой: {combos[combo_key]}")
+
+        lines.append("")  # пустая строка между картами
+
+    return "\n".join(lines)
+
 _cards: list[dict] = []
 
 def get_all_cards() -> list[dict]:
@@ -92,36 +136,33 @@ def get_all_cards() -> list[dict]:
     return _cards
 
 
-def draw_random_card(context: str = "") -> dict:
+def draw_random_card(context: str = "", deck: str = "classic") -> dict:
     cards = get_all_cards()
     card = random.choice(cards)
     is_reversed = random.random() > 0.5
-    return normalize_card(card, is_reversed, context)
+    return normalize_card(card, is_reversed, context, deck)
 
 
-def draw_triple(context: str = "") -> dict:
-    """Тянет три разные карты и ищет комбинации между ними."""
+def draw_triple(context: str = "", deck: str = "classic") -> dict:
     all_cards = get_all_cards()
-    chosen = random.sample(all_cards, 3)   # sample — без повторений
+    chosen = random.sample(all_cards, 3)
+    cards_out = [normalize_card(c, random.random() > 0.5, context, deck) for c in chosen]
 
-    cards_out = []
-    for card in chosen:
-        is_reversed = random.random() > 0.5
-        cards_out.append(normalize_card(card, is_reversed, context))
-
-    # Ищем комбинации: 1-2, 2-3, 1-3
-    ids = [c["id"] for c in cards_out]
+    # Комбо только в прямом порядке!
     combos = {}
-    pairs = [(0, 1), (1, 2), (0, 2)]
-    pair_keys = ["1-2", "2-3", "1-3"]
-    for (i, j), key in zip(pairs, pair_keys):
-        text = find_combo(ids[i], ids[j])
+    pairs = [(0, 1, "1-2"), (1, 2, "2-3"), (0, 2, "1-3")]
+    for i, j, key in pairs:
+        text = find_combo(cards_out[i]["id"], cards_out[j]["id"])
         if text:
             combos[key] = text
 
+    # Формируем LLM-пакет
+    llm_package = build_llm_package(cards_out, combos, context)
+
     return {
-        "cards":    cards_out,
-        "combos":   combos,   # {"1-2": "текст", "2-3": "текст", ...}
-        "context":  context,
-        "llm_summary": "",    # заглушка — заполним в шаге 7
+        "cards": cards_out,
+        "combos": combos,
+        "context": context,
+        "llm_summary": "",
+        "llm_package": llm_package,
     }

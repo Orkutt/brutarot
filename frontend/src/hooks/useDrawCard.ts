@@ -1,8 +1,7 @@
 // src/hooks/useDrawCard.ts
 import { useState } from 'react'
 import { TarotCard, ContextKey } from '../types'
-
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+import { API_URL } from '../constants'
 
 type Status = 'idle' | 'loading' | 'flipping' | 'done' | 'error'
 
@@ -11,13 +10,15 @@ export function useDrawCard() {
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError]   = useState<string | null>(null)
 
-  const draw = async (context: ContextKey) => {
+  const draw = async (context: ContextKey, deck = 'classic') => {
     setCard(null)
     setStatus('loading')
     setError(null)
-
     try {
-      const res = await fetch(`${API_URL}/api/draw-card?context=${context}`)
+      const res = await fetch(
+        `${API_URL}/api/draw-card?context=${context}&deck=${deck}`,
+        { headers: { 'ngrok-skip-browser-warning': 'true' } }
+      )
       if (!res.ok) throw new Error(`Сервер вернул ${res.status}`)
       const data: TarotCard = await res.json()
       setCard(data)
@@ -29,11 +30,6 @@ export function useDrawCard() {
     }
   }
 
-  const reset = () => {
-    setCard(null)
-    setStatus('idle')
-    setError(null)
-  }
-
+  const reset = () => { setCard(null); setStatus('idle'); setError(null) }
   return { card, status, error, draw, reset }
 }

@@ -17,14 +17,10 @@ def load_combos() -> dict[str, str]:
 
 
 def find_combo(id1: str, id2: str) -> str | None:
-    """
-    Ищет комбинацию для двух карт.
-    Пробует оба порядка: m00-m02 и m02-m00.
-    """
+    """Ищет комбинацию ТОЛЬКО в прямом порядке: id1-id2."""
     combos = load_combos()
-    key1 = f"{id1}-{id2}"
-    key2 = f"{id2}-{id1}"
-    return combos.get(key1) or combos.get(key2)
+    key = f"{id1}-{id2}"
+    return combos.get(key)  # обратный порядок НЕ проверяем
 
 
 def find_all_combos(ids: list[str]) -> dict[str, str]:
