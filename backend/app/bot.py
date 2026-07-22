@@ -11,22 +11,17 @@ router = Router()
 
 @router.message(Command("start"))
 async def cmd_start(message: Message):
-    builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(
-        text="🔮 Вытащить карту",
-        web_app=WebAppInfo(url=settings.FRONTEND_URL)
-    ))
+    
     await message.answer(
         "✨ Добро пожаловать!\n\n"
         "Нажми кнопку ниже, чтобы вытащить карту таро и узнать, "
         "что готовит тебе день.",
-        reply_markup=builder.as_markup()
-    )
+        )
 
 @router.message(Command("help"))
 async def cmd_help(message: Message):
     await message.answer(
-        "Просто нажми кнопку «Вытащить карту» — и колода сама выберет твою карту дня."
+        "Просто нажми кнопку «Давай гадать!» — и колода сама выберет твою карту дня."
     )
 
 

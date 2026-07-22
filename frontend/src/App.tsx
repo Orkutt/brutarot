@@ -45,11 +45,11 @@ export default function App() {
   if (subScreen === 'context') {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex flex-col">
-        <header className="flex items-center px-4 pt-6 pb-3 gap-3">
+        <header className="relative flex items-center px-4 pt-6 pb-3 gap-3">
           <button onClick={handleBackToMenu}
-            className="text-slate-400 hover:text-white text-sm">← Назад</button>
-          <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center pr-8">
-            ✦ Одна карта
+            className="absolute left-4 text-slate-400 hover:text-white text-sm">← Назад</button>
+          <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center">
+            Одна карта
           </h1>
         </header>
         <main className="flex-1 px-4 pb-10">
@@ -77,11 +77,11 @@ export default function App() {
   // Экран расклада одной карты
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col">
-      <header className="flex items-center px-4 pt-6 pb-3 gap-3">
+      <header className="relative flex items-center px-4 pt-6 pb-3 gap-3">
         <button onClick={() => { reset(); setSubScreen('context') }}
-          className="text-slate-400 hover:text-white text-sm">← Сначала</button>
-        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center pr-8">
-          ✦ Одна карта
+          className="absolute left-4 text-slate-400 hover:text-white text-sm">← Сначала</button>
+        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center">
+          Одна карта
         </h1>
       </header>
       <main className="flex-1 flex flex-col items-center px-4 pb-10">

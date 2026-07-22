@@ -1,9 +1,10 @@
 // src/components/TripleSpread.tsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ContextKey, CONTEXTS_TRIPLE } from '../types'
 import { useTripleSpread } from '../hooks/useTripleSpread'
 import MixingScreen from './MixingScreen'
 import TripleCard from './TripleCard'
+import { useInterpret } from '../hooks/useInterpret'
 
 interface Props {
   onBack: () => void
@@ -16,38 +17,47 @@ export default function TripleSpread({ onBack }: Props) {
   const [context, setContext]     = useState<ContextKey | null>(null)
   const [activeTab, setActiveTab] = useState(0)
   const { result, phase, revealedCount, error, draw, reset } = useTripleSpread()
+  const { summary, status: llmStatus, interpret, reset: resetLlm } = useInterpret()
 
   const contextLabel = CONTEXTS_TRIPLE.find(c => c.key === context)?.label ?? ''
 
   const handleContextSelect = (key: ContextKey) => setContext(key)
 
   const handleMixingDone = () => {
-    if (!context) return
-    setSubScreen('spread')
-    draw(context)
+  if (!context) return
+  resetLlm()
+  setSubScreen('spread')
+  draw(context)
   }
 
   const handleReset = () => {
-    reset()
-    setSubScreen('context')
-    setContext(null)
-    setActiveTab(0)
+  reset()
+  resetLlm()
+  setSubScreen('context')
+  setContext(null)
+  setActiveTab(0)
   }
 
   const isDone     = phase === 'done'
   const isRevealing = phase === 'revealing' || phase === 'done'
   const isLoading  = phase === 'loading'
 
+  useEffect(() => {
+  if (isDone && result && context) {
+    interpret(result.cards, result.combos, context)
+  }
+  }, [isDone])
+
   // Экран выбора контекста
   if (subScreen === 'context') {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex flex-col">
-        <header className="flex items-center px-4 pt-6 pb-3 gap-3">
-          <button onClick={onBack} className="text-slate-400 hover:text-white text-sm">
+        <header className="relative flex items-center px-4 pt-6 pb-3 gap-3">
+          <button onClick={onBack} className="absolute left-4 text-slate-400 hover:text-white text-sm">
             ← Назад
           </button>
-          <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center pr-8">
-            ✦ Триплет
+          <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center">
+            Триплет
           </h1>
         </header>
         <main className="flex-1 px-4 pb-10">
@@ -108,12 +118,12 @@ export default function TripleSpread({ onBack }: Props) {
   // Экран расклада
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col">
-      <header className="flex items-center px-4 pt-6 pb-3 gap-3">
-        <button onClick={handleReset} className="text-slate-400 hover:text-white text-sm">
+      <header className="relative flex items-center px-4 pt-6 pb-3 gap-3">
+        <button onClick={handleReset} className="absolute left-4 text-slate-400 hover:text-white text-sm">
           ← Сначала
         </button>
-        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center pr-8">
-          ✦ Триплет · {contextLabel}
+        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center">
+          Триплет · {contextLabel}
         </h1>
       </header>
 
@@ -232,16 +242,33 @@ export default function TripleSpread({ onBack }: Props) {
                 {/* Поле для LLM */}
                 <div className="w-full max-w-xs slide-up bg-slate-900/80 rounded-xl p-4
                                 border border-slate-700/50 min-h-[100px]">
-                  <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">
-                    Общая интерпретация расклада
-                  </p>
-                  {result.llm_summary ? (
-                    <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-line">
-                      {result.llm_summary}
+                  <div className="flex items-center gap-2 mb-2">
+                    <p className="text-slate-500 text-xs uppercase tracking-wider">
+                      Общая интерпретация расклада
                     </p>
-                  ) : (
-                    <p className="text-slate-600 text-sm italic">
-                      Здесь появится интерпретация от ИИ...
+                  </div>
+
+                  {llmStatus === 'idle' && (
+                    <p className="text-slate-600 text-sm italic">Здесь появится интерпретация от ИИ...</p>
+                  )}
+
+                  {llmStatus === 'loading' && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border border-purple-500 border-t-transparent
+                                      rounded-full animate-spin flex-shrink-0"/>
+                      <p className="text-purple-400 text-sm italic">Таролог думает...</p>
+                    </div>
+                  )}
+
+                  {llmStatus === 'done' && (
+                    <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-line">
+                      {summary}
+                    </p>
+                  )}
+
+                  {llmStatus === 'error' && (
+                    <p className="text-rose-400 text-sm italic">
+                      Не удалось получить интерпретацию. Попробуй позже.
                     </p>
                   )}
                 </div>

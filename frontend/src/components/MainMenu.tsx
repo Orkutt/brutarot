@@ -11,7 +11,7 @@ export default function MainMenu({ onSelect }: Props) {
                     justify-center px-6 gap-8">
 
       <div className="text-center">
-        <h1 className="text-4xl font-semibold text-purple-300 mb-2">✦ У ведьмы-гадалки ✦</h1>
+        <h1 className="text-4xl font-semibold text-purple-300 mb-2">У ведьмы-гадалки</h1>
         <p className="text-slate-500 text-sm">Выбери тип расклада</p>
       </div>
 
@@ -25,10 +25,10 @@ export default function MainMenu({ onSelect }: Props) {
         >
           <span className="text-3xl">🃏</span>
           <div>
-            <p className="text-white font-medium group-hover:text-purple-200 transition-colors">
+            <p className="text-white font-cormorant font-medium group-hover:text-purple-200 transition-colors">
               Одна карта
             </p>
-            <p className="text-slate-500 text-xs mt-0.5">
+            <p className="text-slate-500 font-cormorant text-xs mt-0.5">
               Быстрый ответ или карта дня
             </p>
           </div>
@@ -42,10 +42,10 @@ export default function MainMenu({ onSelect }: Props) {
         >
           <span className="text-3xl">🎴</span>
           <div>
-            <p className="text-white font-medium group-hover:text-indigo-200 transition-colors">
+            <p className="text-white font-cormorant font-medium group-hover:text-indigo-200 transition-colors">
               Триплет
             </p>
-            <p className="text-slate-500 text-xs mt-0.5">
+            <p className="text-slate-500 font-cormorant text-xs mt-0.5">
               Прошлое · Настоящее · Будущее
             </p>
           </div>

@@ -17,7 +17,6 @@ export const CONTEXTS_TRIPLE = [
   { key: "career",          label: "Работа и карьера",        icon: "💼" },
   { key: "finance",         label: "Финансы",                 icon: "💰" },
   { key: "health",          label: "Здоровье",                icon: "🌿" },
-  { key: "answer",          label: "Ответ на вопрос / Ситуация", icon: "🔍" },
 ] as const
 
 export type ContextKey =

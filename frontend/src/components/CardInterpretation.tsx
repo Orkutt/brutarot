@@ -8,6 +8,8 @@ interface Props {
 export default function CardInterpretation({ card }: Props) {
   // Находим лейбл выбранного контекста для заголовка блока
   const contextLabel = CONTEXTS_SINGLE.find(c => c.key === card.context)?.label ?? ''
+  // Показываем заголовок контекста только если он не "Одна карта"
+  const showContextLabel = card.context !== 'one_card' && contextLabel
 
   return (
     <div className="slide-up mt-5 space-y-4 w-full max-w-sm mx-auto">
@@ -57,9 +59,11 @@ export default function CardInterpretation({ card }: Props) {
 
       {/* Интерпретация по контексту — большое поле, текст может быть объёмным */}
       <div className="bg-indigo-950/60 rounded-xl p-4 border border-indigo-800/50">
-        <p className="text-indigo-300 text-xs uppercase tracking-wider mb-2">
-          {contextLabel || 'Интерпретация'}
-        </p>
+        {showContextLabel && (
+          <p className="text-indigo-300 text-xs uppercase tracking-wider mb-1.5">
+            {contextLabel}
+          </p>
+)}
         {/* min-h чтобы поле не сжималось на коротких текстах */}
         <p className="text-slate-200 text-sm leading-relaxed min-h-[80px] whitespace-pre-line">
           {card.interpretation}

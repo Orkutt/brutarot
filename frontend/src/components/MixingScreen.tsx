@@ -20,36 +20,30 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
   const totalNeeded = mode === 'single' ? 1 : 3
 
   const handleMix = () => {
-    if (phase !== 'idle') return
-    setPhase('mixing')
-    setHighlighted(null)
-    // После анимации перемешивания (1.5с) → фаза выбора
-    setTimeout(() => setPhase('selecting'), 1500)
+  if (phase !== 'idle') return
+  setPhase('mixing')
+  setHighlighted(null)
+  // Увеличили анимацию до 2.5с
+  setTimeout(() => setPhase('selecting'), 2500)
   }
 
   const handleCardClick = (idx: number) => {
-    if (phase !== 'selecting') return
-    if (chosen.includes(idx)) return  // уже добавлена
+  if (phase !== 'selecting') return
+  if (chosen.includes(idx)) return
 
-    if (highlighted === idx) {
-      // Второе нажатие — добавляем карту в расклад
-      const newChosen = [...chosen, idx]
-      setChosen(newChosen)
-      setHighlighted(null)
+  if (highlighted === idx) {
+    const newChosen = [...chosen, idx]
+    setChosen(newChosen)
+    setHighlighted(null)
 
-      if (newChosen.length >= totalNeeded) {
-        // Все карты выбраны — переходим на экран расклада
-        setTimeout(() => onCardSelected(newChosen), 400)
-      } else {
-        // Нужна ещё карта — возвращаемся к перемешиванию
-        setTimeout(() => {
-          setPhase('idle')
-        }, 500)
-      }
-    } else {
-      // Первое нажатие — подсвечиваем
-      setHighlighted(idx)
+    if (newChosen.length >= totalNeeded) {
+      setTimeout(() => onCardSelected(newChosen), 400)
     }
+    // ← убрали else-ветку с возвратом в idle
+    // просто снимаем подсветку, юзер выбирает следующую из тех же трёх карт
+  } else {
+    setHighlighted(idx)
+  }
   }
 
   const needsMoreCards = chosen.length < totalNeeded
@@ -58,25 +52,36 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col">
 
-      <header className="flex items-center px-4 pt-6 pb-3 gap-3">
-        <button onClick={onBack} className="text-slate-400 hover:text-white text-sm">
+      <header className="relative flex items-center px-4 pt-6 pb-3 gap-3">
+        <button onClick={onBack} className="absolute left-4 text-slate-400 hover:text-white text-sm">
           ← Назад
         </button>
-        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center pr-8">
-          {mode === 'single' ? '✦ Одна карта' : '✦ Триплет'}
+        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center">
+          {mode === 'single' ? 'Одна карта' : 'Триплет'}
         </h1>
       </header>
 
       <main className="flex-1 flex flex-col items-center px-4 pb-8 gap-6">
 
         {/* Подсказка */}
-        <p className="text-slate-400 text-sm text-center mt-2">
-          {phase === 'idle' && chosen.length === 0 && 'Перемешай колоду и выбери карту'}
-          {phase === 'idle' && chosen.length > 0 && `Выбрано ${chosen.length} из ${totalNeeded}. Перемешай снова`}
-          {phase === 'mixing' && 'Колода перемешивается...'}
-          {phase === 'selecting' && highlighted === null && 'Нажми на карту, чтобы выбрать'}
-          {phase === 'selecting' && highlighted !== null && 'Нажми ещё раз, чтобы добавить в расклад'}
-        </p>
+              <>
+        {phase === 'idle' && chosen.length === 0 && (
+          <p className="text-slate-400 text-sm text-center mt-2">Перемешай колоду и выбери три карты</p>
+        )}
+        {phase === 'selecting' && (
+          <>
+            <p className="text-slate-400 text-sm text-center mt-2">
+              Выбрано {chosen.length} из {totalNeeded} — выбери ещё
+            </p>
+            {highlighted === null ? (
+              <p className="text-slate-400 text-sm text-center mt-1">Нажми на карту, чтобы выбрать</p>
+            ) : (
+              <p className="text-slate-400 text-sm text-center mt-1">Нажми ещё раз, чтобы добавить в расклад</p>
+            )}
+          </>
+        )}
+      </>
+
 
         {/* Колода */}
         <div className={`relative w-36 h-56 ${phase === 'mixing' ? 'animate-mixing' : ''}`}>
@@ -191,7 +196,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
             }
           `}
         >
-          {phase === 'mixing' ? '⟳ Перемешиваем...' : '🔀 Перемешать колоду'}
+          {phase === 'mixing' ? '⟳ Перемешиваем...' : 'Перемешать колоду'}
         </button>
 
         {/* Рамки-слоты для выбранных карт (только для триплета) */}
@@ -230,27 +235,35 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
 
       </main>
 
-      {/* CSS анимации перемешивания */}
       <style>{`
-        @keyframes shuffle0 {
-          0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-          30%  { transform: translate(-60px, -20px) rotate(-15deg); opacity: 0.9; }
-          60%  { transform: translate(40px, -10px) rotate(10deg); opacity: 0.9; }
-          100% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-        }
-        @keyframes shuffle1 {
-          0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-          30%  { transform: translate(50px, -30px) rotate(12deg); opacity: 0.9; }
-          60%  { transform: translate(-30px, -15px) rotate(-8deg); opacity: 0.9; }
-          100% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-        }
-        @keyframes shuffle2 {
-          0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-          30%  { transform: translate(-20px, -40px) rotate(8deg); opacity: 0.9; }
-          60%  { transform: translate(60px, -5px) rotate(-12deg); opacity: 0.9; }
-          100% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-        }
-      `}</style>
+  @keyframes shuffle0 {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    25%  { transform: translate(-40px, -15px) rotate(-12deg); }
+    50%  { transform: translate(30px, -5px) rotate(10deg); }
+    75%  { transform: translate(-20px, -10px) rotate(-8deg); }
+    100% { transform: translate(0, 0) rotate(0deg); } /* не делай opacity:0 */
+  }
+  @keyframes shuffle1 {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(45px, -25px) rotate(14deg); }
+    50%  { transform: translate(-35px, -8px) rotate(-10deg); }
+    75%  { transform: translate(25px, -12px) rotate(6deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+  }
+  @keyframes shuffle2 {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(-30px, -35px) rotate(9deg); }
+    50%  { transform: translate(50px, -3px) rotate(-13deg); }
+    75%  { transform: translate(-15px, -7px) rotate(7deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+  }
+
+  .card-shuffle-item {
+    position: absolute; /* или relative, зависит от твоего лейаута */
+    will-change: transform, opacity;
+    backface-visibility: hidden; /* убирает мерцание на iOS */
+  }
+`}</style>
     </div>
   )
 }
