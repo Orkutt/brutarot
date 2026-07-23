@@ -4,8 +4,10 @@ import random
 from pathlib import Path
 from typing import Any
 from app.services.combo_service import find_combo
+import os
 
-CARDS_JSON_PATH = Path(__file__).parent.parent.parent.parent / "tarot-images.json"
+_base = Path(os.getenv("DATA_DIR", Path(__file__).parent.parent.parent.parent))
+CARDS_JSON_PATH = _base / "tarot-images.json"
 
 # Маппинг контекстов фронтенда → ключи в JSON
 CONTEXT_MAP = {

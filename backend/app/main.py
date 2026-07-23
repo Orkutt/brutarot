@@ -8,8 +8,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from app.bot import get_bot_and_dispatcher
 from app.routers import cards
+import os
 
-CARDS_ROOT = Path(__file__).parent.parent.parent / "cards"
+
+CARDS_ROOT = Path(os.getenv("DATA_DIR", Path(__file__).parent.parent.parent)) / "cards"
 
 FRONTEND_DIST = Path(__file__).parent.parent.parent / "frontend" / "dist"
 

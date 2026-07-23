@@ -2,8 +2,10 @@
 import json
 from pathlib import Path
 from itertools import combinations
+import os
 
-COMBOS_JSON_PATH = Path(__file__).parent.parent.parent.parent / "combos.json"
+_base = Path(os.getenv("DATA_DIR", Path(__file__).parent.parent.parent.parent))
+COMBOS_JSON_PATH = _base / "combos.json"
 
 _combos: dict[str, str] = {}
 

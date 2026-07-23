@@ -2,8 +2,10 @@
 import json
 import hashlib
 from pathlib import Path
+import os
 
-CACHE_PATH = Path(__file__).parent.parent.parent.parent / "spreads_cache.json"
+_base = Path(os.getenv("DATA_DIR", Path(__file__).parent.parent.parent.parent))
+CACHE_PATH = _base / "spreads_cache.json"
 
 
 def _make_key(cards: list[dict], context: str) -> str:
