@@ -1,0 +1,17 @@
+# render.yaml
+services:
+  - type: web
+    name: tarot-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: BOT_TOKEN
+        sync: false        # вводим вручную в dashboard
+      - key: GIGACHAT_AUTH_KEY
+        sync: false
+      - key: GIGACHAT_SCOPE
+        value: GIGACHAT_API_PERS
+      - key: FRONTEND_URL
+        sync: false        # вводим после деплоя фронта

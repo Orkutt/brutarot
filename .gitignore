@@ -1,6 +1,8 @@
-venv/
-.env
+backend/venv/
+backend/.env
+frontend/node_modules/
+frontend/dist/
+spreads_cache.json
 __pycache__/
 *.pyc
-.pytest_cache/
 test.py
