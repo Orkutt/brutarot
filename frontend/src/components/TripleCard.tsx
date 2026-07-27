@@ -1,6 +1,6 @@
 // src/components/TripleCard.tsx
 import { TarotCard } from '../types'
-import { API_URL, COVER_URL } from '../constants'
+import { API_URL } from '../constants'
 import { useDeck } from '../store/deckStore'
 
 interface Props {
@@ -33,7 +33,7 @@ export default function TripleCard({ card, index, revealed, isActive, onClick }:
 
           {/* Рубашка */}
           <div className="card-face rounded-xl overflow-hidden border border-purple-800">
-            <img src={COVER_URL} alt="Рубашка" className="w-full h-full object-cover"/>
+            <img src={coverUrl} alt="Рубашка" className="w-full h-full object-cover"/>
           </div>
 
           {/* Лицо */}

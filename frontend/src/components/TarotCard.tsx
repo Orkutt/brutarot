@@ -1,6 +1,6 @@
 // src/components/TarotCard.tsx
 import { TarotCard as TarotCardType } from '../types'
-import { API_URL, COVER_URL } from '../constants'
+import { API_URL } from '../constants'
 import { useDeck } from '../store/deckStore'
 
 
@@ -20,7 +20,7 @@ export default function TarotCard({ card, flipped }: Props) {
 
         {/* Рубашка — теперь реальное изображение cover.jpg */}
         <div className="card-face rounded-2xl overflow-hidden border-2 border-purple-700">
-          <img src={COVER_URL} alt="Рубашка" className="w-full h-full object-cover"/>
+          <img src={coverUrl} alt="Рубашка" className="w-full h-full object-cover"/>
         </div>
 
         {/* Лицо карты */}
