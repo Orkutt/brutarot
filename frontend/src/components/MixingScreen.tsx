@@ -1,7 +1,9 @@
 // src/components/MixingScreen.tsx
 import { useState } from 'react'
-import { COVER_URL } from '../constants'
 import { SpreadMode } from '../types'
+import { useDeck } from '../store/deckStore'
+import { API_URL } from '../constants'
+
 
 interface Props {
   mode: SpreadMode
@@ -14,6 +16,8 @@ type Phase = 'idle' | 'mixing' | 'selecting'
 const CARD_COUNT = 3  // всегда показываем 3 карты на выбор
 
 export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
+  const { deck } = useDeck()
+  const coverUrl = `${API_URL}/cards/${deck.cover}`
   const [phase, setPhase]           = useState<Phase>('idle')
   const [highlighted, setHighlighted] = useState<number | null>(null)
   const [chosen, setChosen]           = useState<number[]>([])  // уже добавленные в расклад
@@ -108,7 +112,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
             style={{ zIndex: 4 }}
           >
             <img
-              src={COVER_URL}
+              src={coverUrl}
               alt="Колода"
               className="w-full h-full object-cover"
             />
@@ -128,7 +132,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
                     background: '#1e1b4b',
                   }}
                 >
-                  <img src={COVER_URL} alt="" className="w-full h-full object-cover opacity-80"/>
+                  <img src={coverUrl} alt="" className="w-full h-full object-cover opacity-80"/>
                 </div>
               ))}
             </>
@@ -166,7 +170,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
                   }}
                 >
                   <img
-                    src={COVER_URL}
+                    src={coverUrl}
                     alt="Карта"
                     className="w-full h-full object-cover"
                   />
@@ -218,7 +222,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
                 >
                   {isFilled ? (
                     <img
-                      src={COVER_URL}
+                      src={coverUrl}
                       alt="Выбранная карта"
                       className="w-full h-full object-cover rounded-xl opacity-80"
                     />

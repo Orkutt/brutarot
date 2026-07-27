@@ -120,7 +120,7 @@ export default function TripleSpread({ onBack }: Props) {
     <div className="min-h-screen bg-slate-950 text-white flex flex-col">
       <header className="relative flex items-center px-4 pt-6 pb-3 gap-3">
         <button onClick={handleReset} className="absolute left-4 text-slate-400 hover:text-white text-sm">
-          ← Сначала
+          ←
         </button>
         <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center">
           Триплет · {contextLabel}

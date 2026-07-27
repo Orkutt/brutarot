@@ -50,7 +50,7 @@ export interface TripleSpreadResult {
 }
 
 // Тип экрана
-export type Screen = 'menu' | 'single' | 'triple'
+export type Screen = 'menu' | 'single' | 'triple' | 'celtic' | 'settings'
 
 // Режим расклада — передаём в MixingScreen
 export type SpreadMode = 'single' | 'triple'

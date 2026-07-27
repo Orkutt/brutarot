@@ -1,6 +1,7 @@
 // src/components/TripleCard.tsx
 import { TarotCard } from '../types'
 import { API_URL, COVER_URL } from '../constants'
+import { useDeck } from '../store/deckStore'
 
 interface Props {
   card: TarotCard
@@ -13,7 +14,9 @@ interface Props {
 const POSITION_LABELS = ['Прошлое', 'Настоящее', 'Будущее']
 
 export default function TripleCard({ card, index, revealed, isActive, onClick }: Props) {
-  const imageUrl = `${API_URL}/cards/${card.img}`
+  const { deck } = useDeck()
+  const coverUrl = `${API_URL}/cards/${deck.cover}`
+  const imageUrl = `${API_URL}/cards/${deck.key}/${card.img.split('/').pop()}`
 
   return (
     <div

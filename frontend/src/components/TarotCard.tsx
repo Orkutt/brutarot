@@ -1,6 +1,8 @@
 // src/components/TarotCard.tsx
 import { TarotCard as TarotCardType } from '../types'
 import { API_URL, COVER_URL } from '../constants'
+import { useDeck } from '../store/deckStore'
+
 
 interface Props {
   card: TarotCardType
@@ -8,7 +10,9 @@ interface Props {
 }
 
 export default function TarotCard({ card, flipped }: Props) {
-  const imageUrl = `${API_URL}/cards/${card.img}`
+  const { deck } = useDeck()
+  const coverUrl = `${API_URL}/cards/${deck.cover}`
+  const imageUrl = `${API_URL}/cards/${deck.key}/${card.img.split('/').pop()}`
 
   return (
     <div className="perspective w-60 h-96 mx-auto">

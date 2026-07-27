@@ -1,12 +1,14 @@
 // src/App.tsx
 import { useEffect, useState } from 'react'
 import { Screen, ContextKey, CONTEXTS_SINGLE } from './types'
+import { useDeck } from './store/deckStore'
 import MainMenu from './components/MainMenu'
 import ContextSelector from './components/ContextSelector'
 import MixingScreen from './components/MixingScreen'
 import TarotCard from './components/TarotCard'
 import CardInterpretation from './components/CardInterpretation'
 import TripleSpread from './components/TripleSpread'
+import DeckSelector from './components/DeckSelector'
 import { useDrawCard } from './hooks/useDrawCard'
 
 type SingleSubScreen = 'context' | 'mixing' | 'spread'
@@ -15,6 +17,7 @@ export default function App() {
   const [screen, setScreen]         = useState<Screen>('menu')
   const [subScreen, setSubScreen]   = useState<SingleSubScreen>('context')
   const [context, setContext]       = useState<ContextKey | null>(null)
+  const { deck } = useDeck()
   const { card, status, error, draw, reset } = useDrawCard()
 
   useEffect(() => {
@@ -32,14 +35,52 @@ export default function App() {
   const handleMixingDone = () => {
     if (!context) return
     setSubScreen('spread')
-    draw(context)
+    draw(context, deck.key)
   }
 
   const isFlipping = status === 'flipping' || status === 'done'
   const isDone     = status === 'done'
 
-  if (screen === 'menu') return <MainMenu onSelect={setScreen} />
-  if (screen === 'triple') return <TripleSpread onBack={handleBackToMenu} />
+    // Выбор колоды
+  if (screen === 'settings') {
+    return <DeckSelector onBack={() => setScreen('menu')} />
+  }
+
+
+  // Главное меню
+  if (screen === 'menu') {
+    return (
+      <MainMenu
+        onSelect={setScreen}
+        onSettings={() => setScreen('settings')}
+      />
+    )
+  }
+
+  // Триплет
+  if (screen === 'triple') {
+    return <TripleSpread onBack={handleBackToMenu} />
+  }
+
+  // Кельтский крест — заглушка
+  if (screen === 'celtic') {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center
+                      justify-center gap-4">
+        <p className="text-2xl">✝</p>
+        <p className="text-purple-300 text-lg font-medium">Кельтский крест</p>
+        <p className="text-slate-500 text-sm">Раздел в разработке</p>
+        <button
+          onClick={handleBackToMenu}
+          className="mt-4 px-6 py-2 rounded-xl border border-slate-700
+                     text-slate-400 text-sm hover:border-purple-700 hover:text-purple-300
+                     transition-all"
+        >
+          ← Назад
+        </button>
+      </div>
+    )
+  }
 
   // Одна карта
   if (subScreen === 'context') {
@@ -64,6 +105,7 @@ export default function App() {
     )
   }
 
+  // Одна карта — перемешивание
   if (subScreen === 'mixing') {
     return (
       <MixingScreen
