@@ -88,7 +88,12 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
 
 
         {/* Колода */}
-        <div className={`relative w-36 h-56 ${phase === 'mixing' ? 'animate-mixing' : ''}`}>
+        <div
+          className={`relative w-36 h-56 deck-wrap`}
+          style={phase === 'mixing' ? {
+            animation: 'deckSettle 2.5s ease-in-out forwards'
+          } : undefined}
+        >
 
           {/* Стопка карт (иллюзия глубины) */}
           {[3, 2, 1].map(offset => (
@@ -118,21 +123,36 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
             />
           </div>
 
-          {/* Анимация перемешивания — карты летают */}
+          {/* Анимация перемешивания — 2 слоя карт */}
           {phase === 'mixing' && (
             <>
-              {[0, 1, 2].map(i => (
+              {/* Фоновый слой — двигается меньше */}
+              {[0, 1].map(i => (
                 <div
-                  key={i}
-                  className="absolute w-full h-full rounded-xl overflow-hidden
-                             border-2 border-purple-500"
+                  key={`bg-${i}`}
+                  className="absolute w-full h-full rounded-xl overflow-hidden border border-purple-800/60"
                   style={{
-                    zIndex: 10 + i,
-                    animation: `shuffle${i} 1.5s ease-in-out forwards`,
+                    zIndex: 5 + i,
+                    animation: `shuffleBg${i} 2.5s ease-in-out forwards`,
                     background: '#1e1b4b',
                   }}
                 >
-                  <img src={coverUrl} alt="" className="w-full h-full object-cover opacity-80"/>
+                  <img src={coverUrl} alt="" className="w-full h-full object-cover opacity-60"/>
+                </div>
+              ))}
+
+              {/* Верхний слой — активные карты с сильным 3D */}
+              {[0, 1, 2].map(i => (
+                <div
+                  key={`top-${i}`}
+                  className="absolute w-full h-full rounded-xl overflow-hidden border-2 border-purple-500/80"
+                  style={{
+                    zIndex: 8 + i,
+                    animation: `shuffleTop${i} 2.5s ease-in-out forwards`,
+                    background: '#1e1b4b',
+                  }}
+                >
+                  <img src={coverUrl} alt="" className="w-full h-full object-cover opacity-90"/>
                 </div>
               ))}
             </>
@@ -240,34 +260,64 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
       </main>
 
       <style>{`
-  @keyframes shuffle0 {
-    0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-    25%  { transform: translate(-40px, -15px) rotate(-12deg); }
-    50%  { transform: translate(30px, -5px) rotate(10deg); }
-    75%  { transform: translate(-20px, -10px) rotate(-8deg); }
-    100% { transform: translate(0, 0) rotate(0deg); } /* не делай opacity:0 */
-  }
-  @keyframes shuffle1 {
-    0%   { transform: translate(0, 0) rotate(0deg); }
-    25%  { transform: translate(45px, -25px) rotate(14deg); }
-    50%  { transform: translate(-35px, -8px) rotate(-10deg); }
-    75%  { transform: translate(25px, -12px) rotate(6deg); }
-    100% { transform: translate(0, 0) rotate(0deg); }
-  }
-  @keyframes shuffle2 {
-    0%   { transform: translate(0, 0) rotate(0deg); }
-    25%  { transform: translate(-30px, -35px) rotate(9deg); }
-    50%  { transform: translate(50px, -3px) rotate(-13deg); }
-    75%  { transform: translate(-15px, -7px) rotate(7deg); }
-    100% { transform: translate(0, 0) rotate(0deg); }
-  }
+        /* Родитель колоды — перспектива для 3D-эффекта */
+        .deck-wrap {
+          perspective: 600px;
+          transform-style: preserve-3d;
+        }
 
-  .card-shuffle-item {
-    position: absolute; /* или relative, зависит от твоего лейаута */
-    will-change: transform, opacity;
-    backface-visibility: hidden; /* убирает мерцание на iOS */
-  }
-`}</style>
+        /* ── Фоновые карты (тихий слой) ── */
+        @keyframes shuffleBg0 {
+          0%   { transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 0; }
+          10%  { opacity: 1; }
+          25%  { transform: translate3d(-28px,-12px,-30px) rotateY(-18deg) rotateZ(-6deg) scale(0.94); }
+          55%  { transform: translate3d(22px, 8px,-20px) rotateY( 12deg) rotateZ( 4deg) scale(0.96); }
+          80%  { transform: translate3d(-10px,-4px,-10px) rotateY(-5deg)  rotateZ(-2deg) scale(0.98); }
+          100% { transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg) scale(1);   opacity: 0; }
+        }
+        @keyframes shuffleBg1 {
+          0%   { transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 0; }
+          15%  { opacity: 1; }
+          30%  { transform: translate3d(24px,-16px,-25px) rotateY(14deg) rotateZ(5deg) scale(0.95); }
+          60%  { transform: translate3d(-18px,10px,-15px) rotateY(-10deg) rotateZ(-3deg) scale(0.97); }
+          85%  { transform: translate3d(8px,-3px,-8px) rotateY(4deg) rotateZ(1deg) scale(0.99); }
+          100% { transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg) scale(1);  opacity: 0; }
+        }
+
+        /* ── Верхние карты (активный слой) ── */
+        @keyframes shuffleTop0 {
+          0%   { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 1; }
+          20%  { transform: translate3d(-55px,-18px, 20px) rotateX(8deg)  rotateY(-28deg) rotateZ(-12deg) scale(0.88); }
+          45%  { transform: translate3d( 40px, 10px,-10px) rotateX(-5deg) rotateY( 20deg) rotateZ(  8deg) scale(0.92); }
+          70%  { transform: translate3d(-20px,-6px,  8px) rotateX(3deg)  rotateY(-10deg) rotateZ( -4deg) scale(0.97); }
+          88%  { transform: translate3d(  5px, 2px,  2px) rotateX(-1deg) rotateY(  3deg) rotateZ(  1deg) scale(1.01); }
+          100% { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);        opacity: 0; }
+        }
+        @keyframes shuffleTop1 {
+          0%   { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 1; }
+          15%  { transform: translate3d( 50px,-22px, 15px) rotateX(-10deg) rotateY( 24deg) rotateZ( 14deg) scale(0.86); }
+          40%  { transform: translate3d(-35px, 14px,-12px) rotateX(  6deg) rotateY(-18deg) rotateZ(-10deg) scale(0.91); }
+          68%  { transform: translate3d( 18px, -4px,  6px) rotateX( -2deg) rotateY(  8deg) rotateZ(  3deg) scale(0.98); }
+          87%  { transform: translate3d( -4px,  1px,  1px) rotateX(  1deg) rotateY( -2deg) rotateZ( -1deg) scale(1.01); }
+          100% { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);          opacity: 0; }
+        }
+        @keyframes shuffleTop2 {
+          0%   { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 1; }
+          25%  { transform: translate3d(-30px, 20px, 25px) rotateX( 12deg) rotateY(-22deg) rotateZ(-16deg) scale(0.84); }
+          50%  { transform: translate3d( 45px,-10px,-15px) rotateX( -7deg) rotateY( 16deg) rotateZ( 11deg) scale(0.90); }
+          72%  { transform: translate3d(-15px,  5px,  4px) rotateX(  4deg) rotateY( -7deg) rotateZ( -3deg) scale(0.97); }
+          90%  { transform: translate3d(  3px, -1px,  0px) rotateX( -1deg) rotateY(  2deg) rotateZ(  1deg) scale(1.00); }
+          100% { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);          opacity: 0; }
+        }
+
+        /* Settle-bounce колоды в конце */
+        @keyframes deckSettle {
+          0%,100% { transform: translate3d(0,0,0) rotateX(0deg); }
+          20%     { transform: translate3d(0,-6px, 8px) rotateX(4deg); }
+          50%     { transform: translate3d(0, 3px,-4px) rotateX(-2deg); }
+          80%     { transform: translate3d(0,-1px, 2px) rotateX(1deg); }
+        }
+      `}</style>
     </div>
   )
 }

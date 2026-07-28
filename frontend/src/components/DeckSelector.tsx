@@ -28,12 +28,12 @@ export default function DeckSelector({ onBack }: Props) {
       <header className="flex items-center px-4 pt-6 pb-3 gap-3">
         <button
           onClick={onBack}
-          className="text-slate-400 hover:text-white transition-colors text-sm"
+          className="absolute left-4 text-slate-400 hover:text-white transition-colors text-sm"
         >
           ← Назад
         </button>
-        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center pr-8">
-          ✦ Выбор колоды
+        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center">
+          Выбор колоды
         </h1>
       </header>
 
@@ -91,7 +91,7 @@ export default function DeckSelector({ onBack }: Props) {
                     <span className="text-purple-400 text-xs">✓ выбрана</span>
                   )}
                 </div>
-                <p className="text-slate-400 text-xs leading-relaxed line-clamp-3">
+                <p className="text-slate-400 text-xs leading-relaxed line-clamp-4">
                   {d.description}
                 </p>
                 {isHighlighted && (
