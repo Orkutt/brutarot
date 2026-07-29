@@ -85,6 +85,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
                 className="fan-card"
                 onClick={() => handleCardClick(idx)}
                 disabled={isChosen}
+                data-highlighted={isHighlighted ? 'true' : undefined}
                 style={{
                   '--a': `${angle}deg`,
                   zIndex: isHighlighted ? 30 : isChosen ? 1 : 10 + idx,
@@ -155,17 +156,17 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
         .fan-section {
           flex: 1;
           display: flex;
-          align-items: flex-end;
+          align-items: center;
           justify-content: center;
-          padding: 20px 20px 10vh;
-          /* Перспектива для лёгкого 3D */
+          padding: 20px;
           perspective: 900px;
         }
 
         .fan-hand {
           position: relative;
           width: 220px;
-          height: 220px;
+          height: 280px;
+          margin-bottom: 40px; /* небольшой отступ вниз — веер рисуется от bottom */
         }
 
         .fan-card {
