@@ -56,7 +56,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
           ← Назад
         </button>
         <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center pr-8">
-          {mode === 'single' ? '✦ Одна карта' : '✦ Триплет'}
+          {mode === 'single' ? '✦ Одна карта' : 'Триплет'}
         </h1>
       </header>
 

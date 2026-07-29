@@ -25,7 +25,7 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
       </button>                
 
       <div className="text-center">
-        <h1 className="text-4xl font-semibold text-purple-300 mb-2">У ведьмы-гадалки</h1>
+        <h1 className="text-4xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>У ведьмы-гадалки</h1>
         <p className="text-slate-500 text-sm">
           Колода: <span className="text-slate-400">{deck.name}</span>
         </p>
@@ -43,7 +43,8 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
         >
           <span className="text-3xl">🃏</span>
           <div>
-            <p className="text-white font-cormorant font-medium group-hover:text-purple-200 transition-colors">
+            <p className="font-medium group-hover:text-purple-200 transition-colors"
+            style={{ color: 'var(--text-primary)' }}>
               Одна карта
             </p>
             <p className="text-slate-500 font-cormorant text-xs mt-0.5">
@@ -61,7 +62,8 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
         >
           <span className="text-3xl">🎴</span>
           <div>
-            <p className="text-white font-cormorant font-medium group-hover:text-indigo-200 transition-colors">
+            <p className="font-medium group-hover:text-indigo-200 transition-colors"
+            style={{ color: 'var(--text-primary)' }}>
               Триплет
             </p>
             <p className="text-slate-500 font-cormorant text-xs mt-0.5">

@@ -47,7 +47,7 @@ export default function DeckSelector({ onBack }: Props) {
         {/* Выбор темы */}
         <section>
           <p className="text-xs uppercase tracking-wider mb-3"
-             style={{ color: 'var(--text-muted)' }}>
+             style={{ color: 'var(--text-secondary)' }}>
             Цветовая тема
           </p>
           <div className="flex flex-col gap-2">
@@ -81,7 +81,7 @@ export default function DeckSelector({ onBack }: Props) {
                     <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                       {t.name}
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
                       {t.description}
                     </p>
                   </div>
@@ -98,7 +98,7 @@ export default function DeckSelector({ onBack }: Props) {
         {/* Выбор колоды */}
         <section>
           <p className="text-xs uppercase tracking-wider mb-3"
-             style={{ color: 'var(--text-muted)' }}>
+             style={{ color: 'var(--text-secondary)' }}>
             Колода карт · нажми дважды для выбора
           </p>
           <div className="flex flex-col gap-3">
@@ -142,7 +142,7 @@ export default function DeckSelector({ onBack }: Props) {
                       )}
                     </div>
                     <p className="text-xs leading-relaxed line-clamp-5"
-                       style={{ color: 'var(--text-muted)' }}>
+                       style={{ color: 'var(--text-secondary)' }}>
                       {d.description}
                     </p>
                     {isHighlighted && (
