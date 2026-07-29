@@ -1,321 +1,247 @@
 // src/components/MixingScreen.tsx
 import { useState } from 'react'
-import { SpreadMode } from '../types'
 import { useDeck } from '../store/deckStore'
 import { API_URL } from '../constants'
-
+import { SpreadMode } from '../types'
 
 interface Props {
   mode: SpreadMode
-  onCardSelected: (indices: number[]) => void  // индексы выбранных карт
+  onCardSelected: (indices: number[]) => void
   onBack: () => void
 }
 
-type Phase = 'idle' | 'mixing' | 'selecting'
+const TOTAL_CARDS = 20
+const totalNeeded = (mode: SpreadMode) => mode === 'single' ? 1 : 3
 
-const CARD_COUNT = 3  // всегда показываем 3 карты на выбор
+// Распределяем углы веера: от -46deg до +46deg для 20 карт
+const ANGLES = Array.from({ length: TOTAL_CARDS }, (_, i) => {
+  const spread = 92  // общий угол веера в градусах
+  return -spread / 2 + (spread / (TOTAL_CARDS - 1)) * i
+})
 
 export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
   const { deck } = useDeck()
   const coverUrl = `${API_URL}/cards/${deck.cover}`
-  const [phase, setPhase]           = useState<Phase>('idle')
-  const [highlighted, setHighlighted] = useState<number | null>(null)
-  const [chosen, setChosen]           = useState<number[]>([])  // уже добавленные в расклад
-  const totalNeeded = mode === 'single' ? 1 : 3
 
-  const handleMix = () => {
-  if (phase !== 'idle') return
-  setPhase('mixing')
-  setHighlighted(null)
-  // Увеличили анимацию до 2.5с
-  setTimeout(() => setPhase('selecting'), 2500)
-  }
+  const [highlighted, setHighlighted] = useState<number | null>(null)
+  const [chosen, setChosen]           = useState<number[]>([])
+  const needed = totalNeeded(mode)
 
   const handleCardClick = (idx: number) => {
-  if (phase !== 'selecting') return
-  if (chosen.includes(idx)) return
+    if (chosen.includes(idx)) return  // уже выбрана — игнорируем
 
-  if (highlighted === idx) {
-    const newChosen = [...chosen, idx]
-    setChosen(newChosen)
-    setHighlighted(null)
+    if (highlighted === idx) {
+      // Второй тап — добавляем в расклад
+      const newChosen = [...chosen, idx]
+      setChosen(newChosen)
+      setHighlighted(null)
 
-    if (newChosen.length >= totalNeeded) {
-      setTimeout(() => onCardSelected(newChosen), 400)
+      if (newChosen.length >= needed) {
+        setTimeout(() => onCardSelected(newChosen), 400)
+      }
+    } else {
+      // Первый тап — приподнимаем карту
+      setHighlighted(idx)
     }
-    // ← убрали else-ветку с возвратом в idle
-    // просто снимаем подсветку, юзер выбирает следующую из тех же трёх карт
-  } else {
-    setHighlighted(idx)
   }
-  }
-
-  const needsMoreCards = chosen.length < totalNeeded
-  const canMix = phase === 'idle'
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col">
 
-      <header className="relative flex items-center px-4 pt-6 pb-3 gap-3">
-        <button onClick={onBack} className="absolute left-4 text-slate-400 hover:text-white text-sm">
+      <header className="flex items-center px-4 pt-6 pb-3 gap-3">
+        <button
+          onClick={onBack}
+          className="text-slate-400 hover:text-white transition-colors text-sm"
+        >
           ← Назад
         </button>
-        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center">
-          {mode === 'single' ? 'Одна карта' : 'Триплет'}
+        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center pr-8">
+          {mode === 'single' ? '✦ Одна карта' : '✦ Триплет'}
         </h1>
       </header>
 
-      <main className="flex-1 flex flex-col items-center px-4 pb-8 gap-6">
+      {/* Подсказка */}
+      <div className="text-center px-4 mt-1 min-h-[36px]">
+        <p className="text-slate-400 text-sm">
+          {chosen.length === 0 && highlighted === null &&
+            'Выбери карту из веера'}
+          {highlighted !== null &&
+            'Нажми ещё раз, чтобы взять карту'}
+          {highlighted === null && chosen.length > 0 && chosen.length < needed &&
+            `Выбрано ${chosen.length} из ${needed} — выбери следующую`}
+        </p>
+      </div>
 
-        {/* Подсказка */}
-              <>
-        {phase === 'idle' && chosen.length === 0 && (
-          <p className="text-slate-400 text-sm text-center mt-2">Перемешай колоду и выбери три карты</p>
-        )}
-        {phase === 'selecting' && (
-          <>
-            <p className="text-slate-400 text-sm text-center mt-2">
-              Выбрано {chosen.length} из {totalNeeded} — выбери ещё
-            </p>
-            {highlighted === null ? (
-              <p className="text-slate-400 text-sm text-center mt-1">Нажми на карту, чтобы выбрать</p>
-            ) : (
-              <p className="text-slate-400 text-sm text-center mt-1">Нажми ещё раз, чтобы добавить в расклад</p>
-            )}
-          </>
-        )}
-      </>
+      {/* Веер карт */}
+      <div className="fan-section">
+        <div className="fan-hand">
+          {ANGLES.map((angle, idx) => {
+            const isChosen      = chosen.includes(idx)
+            const isHighlighted = highlighted === idx
 
-
-        {/* Колода */}
-        <div
-          className={`relative w-36 h-56 deck-wrap`}
-          style={phase === 'mixing' ? {
-            animation: 'deckSettle 2.5s ease-in-out forwards'
-          } : undefined}
-        >
-
-          {/* Стопка карт (иллюзия глубины) */}
-          {[3, 2, 1].map(offset => (
-            <div
-              key={offset}
-              className="absolute rounded-xl border border-purple-800/50"
-              style={{
-                top: -offset * 2,
-                left: offset * 1,
-                width: '100%',
-                height: '100%',
-                background: '#1e1b4b',
-                zIndex: offset,
-              }}
-            />
-          ))}
-
-          {/* Верхняя карта — рубашка */}
-          <div
-            className="absolute w-full h-full rounded-xl overflow-hidden border-2 border-purple-700"
-            style={{ zIndex: 4 }}
-          >
-            <img
-              src={coverUrl}
-              alt="Колода"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* Анимация перемешивания — 2 слоя карт */}
-          {phase === 'mixing' && (
-            <>
-              {/* Фоновый слой — двигается меньше */}
-              {[0, 1].map(i => (
-                <div
-                  key={`bg-${i}`}
-                  className="absolute w-full h-full rounded-xl overflow-hidden border border-purple-800/60"
-                  style={{
-                    zIndex: 5 + i,
-                    animation: `shuffleBg${i} 2.5s ease-in-out forwards`,
-                    background: '#1e1b4b',
-                  }}
-                >
-                  <img src={coverUrl} alt="" className="w-full h-full object-cover opacity-60"/>
-                </div>
-              ))}
-
-              {/* Верхний слой — активные карты с сильным 3D */}
-              {[0, 1, 2].map(i => (
-                <div
-                  key={`top-${i}`}
-                  className="absolute w-full h-full rounded-xl overflow-hidden border-2 border-purple-500/80"
-                  style={{
-                    zIndex: 8 + i,
-                    animation: `shuffleTop${i} 2.5s ease-in-out forwards`,
-                    background: '#1e1b4b',
-                  }}
-                >
-                  <img src={coverUrl} alt="" className="w-full h-full object-cover opacity-90"/>
-                </div>
-              ))}
-            </>
-          )}
-        </div>
-
-        {/* Три карты на выбор — появляются в фазе selecting */}
-        {phase === 'selecting' && (
-          <div className="flex gap-3 justify-center mt-2">
-            {Array.from({ length: CARD_COUNT }).map((_, idx) => {
-              const isChosen      = chosen.includes(idx)
-              const isHighlighted = highlighted === idx
-
-              return (
-                <div
-                  key={idx}
-                  onClick={() => handleCardClick(idx)}
-                  className={`
-                    relative w-20 h-32 rounded-xl overflow-hidden cursor-pointer
-                    border-2 transition-all duration-300 select-none
-                    ${isChosen
-                      ? 'opacity-30 border-slate-700 cursor-default'
-                      : isHighlighted
-                        ? 'border-yellow-400 shadow-lg shadow-yellow-500/40 scale-105 -translate-y-3'
-                        : 'border-purple-600 hover:border-purple-400 hover:-translate-y-2'
-                    }
-                  `}
-                  style={{
-                    // Карты чуть выдвинуты из "колоды" — разные углы
-                    transform: isHighlighted
-                      ? 'translateY(-12px) scale(1.05)'
-                      : isChosen
-                        ? 'translateY(0)'
-                        : `translateY(-8px) rotate(${(idx - 1) * 4}deg)`,
-                  }}
-                >
+            return (
+              <button
+                key={idx}
+                className="fan-card"
+                onClick={() => handleCardClick(idx)}
+                disabled={isChosen}
+                style={{
+                  '--a': `${angle}deg`,
+                  zIndex: isHighlighted ? 30 : isChosen ? 1 : 10 + idx,
+                } as React.CSSProperties}
+              >
+                {/* Рубашка карты */}
+                {!isChosen && (
                   <img
                     src={coverUrl}
                     alt="Карта"
-                    className="w-full h-full object-cover"
+                    className="fan-card__img"
+                    style={{
+                      opacity: isHighlighted ? 1 : 0.92,
+                    }}
                   />
-                  {isHighlighted && (
-                    <div className="absolute inset-0 bg-yellow-400/10 flex items-end
-                                    justify-center pb-2">
-                      <span className="text-yellow-300 text-xs">✓ ещё раз</span>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        )}
+                )}
 
-        {/* Кнопка перемешать */}
-        <button
-          onClick={handleMix}
-          disabled={!canMix}
-          className={`
-            px-8 py-3 rounded-xl text-sm font-medium transition-all duration-300
-            ${canMix && needsMoreCards
-              ? 'bg-purple-700 text-white deck-glow hover:bg-purple-600 active:scale-95'
-              : canMix && !needsMoreCards
-                ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                : 'bg-purple-900/40 text-purple-600 cursor-not-allowed'
-            }
-          `}
-        >
-          {phase === 'mixing' ? '⟳ Перемешиваем...' : 'Перемешать колоду'}
-        </button>
+                {/* Выбранная карта — показываем галочку */}
+                {isChosen && (
+                  <div className="fan-card__chosen">
+                    <span>✓</span>
+                  </div>
+                )}
 
-        {/* Рамки-слоты для выбранных карт (только для триплета) */}
-        {mode === 'triple' && (
-          <div className="flex gap-3 mt-2">
-            {Array.from({ length: 3 }).map((_, i) => {
-              const isFilled = i < chosen.length
-              return (
-                <div
-                  key={i}
-                  className={`
-                    w-20 h-32 rounded-xl border-2 border-dashed flex items-center
-                    justify-center transition-all duration-500
-                    ${isFilled
-                      ? 'border-purple-500 bg-purple-950/50'
-                      : 'border-slate-700 bg-slate-900/30'
-                    }
-                  `}
-                >
-                  {isFilled ? (
-                    <img
-                      src={coverUrl}
-                      alt="Выбранная карта"
-                      className="w-full h-full object-cover rounded-xl opacity-80"
-                    />
-                  ) : (
-                    <span className="text-slate-600 text-xs text-center px-1">
-                      {i + 1}
-                    </span>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        )}
+                {/* Подсветка при первом тапе */}
+                {isHighlighted && (
+                  <div className="fan-card__glow" />
+                )}
+              </button>
+            )
+          })}
+        </div>
+      </div>
 
-      </main>
+      {/* Слоты для выбранных карт (триплет) */}
+      {mode === 'triple' && (
+        <div className="flex justify-center gap-3 px-4 mt-6">
+          {Array.from({ length: 3 }).map((_, i) => {
+            const isFilled = i < chosen.length
+            return (
+              <div
+                key={i}
+                className={`
+                  w-16 h-24 rounded-xl border-2 border-dashed flex items-center
+                  justify-center transition-all duration-500 overflow-hidden
+                  ${isFilled
+                    ? 'border-purple-500 bg-purple-950/50'
+                    : 'border-slate-700 bg-slate-900/30'
+                  }
+                `}
+              >
+                {isFilled ? (
+                  <img
+                    src={coverUrl}
+                    alt="Выбранная карта"
+                    className="w-full h-full object-cover opacity-80"
+                  />
+                ) : (
+                  <span className="text-slate-600 text-sm">{i + 1}</span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       <style>{`
-        /* Родитель колоды — перспектива для 3D-эффекта */
-        .deck-wrap {
-          perspective: 600px;
-          transform-style: preserve-3d;
+        .fan-section {
+          flex: 1;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          padding: 20px 20px 10vh;
+          /* Перспектива для лёгкого 3D */
+          perspective: 900px;
         }
 
-        /* ── Фоновые карты (тихий слой) ── */
-        @keyframes shuffleBg0 {
-          0%   { transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 0; }
-          10%  { opacity: 1; }
-          25%  { transform: translate3d(-28px,-12px,-30px) rotateY(-18deg) rotateZ(-6deg) scale(0.94); }
-          55%  { transform: translate3d(22px, 8px,-20px) rotateY( 12deg) rotateZ( 4deg) scale(0.96); }
-          80%  { transform: translate3d(-10px,-4px,-10px) rotateY(-5deg)  rotateZ(-2deg) scale(0.98); }
-          100% { transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg) scale(1);   opacity: 0; }
-        }
-        @keyframes shuffleBg1 {
-          0%   { transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 0; }
-          15%  { opacity: 1; }
-          30%  { transform: translate3d(24px,-16px,-25px) rotateY(14deg) rotateZ(5deg) scale(0.95); }
-          60%  { transform: translate3d(-18px,10px,-15px) rotateY(-10deg) rotateZ(-3deg) scale(0.97); }
-          85%  { transform: translate3d(8px,-3px,-8px) rotateY(4deg) rotateZ(1deg) scale(0.99); }
-          100% { transform: translate3d(0,0,0) rotateY(0deg) rotateZ(0deg) scale(1);  opacity: 0; }
+        .fan-hand {
+          position: relative;
+          width: 220px;
+          height: 220px;
         }
 
-        /* ── Верхние карты (активный слой) ── */
-        @keyframes shuffleTop0 {
-          0%   { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 1; }
-          20%  { transform: translate3d(-55px,-18px, 20px) rotateX(8deg)  rotateY(-28deg) rotateZ(-12deg) scale(0.88); }
-          45%  { transform: translate3d( 40px, 10px,-10px) rotateX(-5deg) rotateY( 20deg) rotateZ(  8deg) scale(0.92); }
-          70%  { transform: translate3d(-20px,-6px,  8px) rotateX(3deg)  rotateY(-10deg) rotateZ( -4deg) scale(0.97); }
-          88%  { transform: translate3d(  5px, 2px,  2px) rotateX(-1deg) rotateY(  3deg) rotateZ(  1deg) scale(1.01); }
-          100% { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);        opacity: 0; }
-        }
-        @keyframes shuffleTop1 {
-          0%   { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 1; }
-          15%  { transform: translate3d( 50px,-22px, 15px) rotateX(-10deg) rotateY( 24deg) rotateZ( 14deg) scale(0.86); }
-          40%  { transform: translate3d(-35px, 14px,-12px) rotateX(  6deg) rotateY(-18deg) rotateZ(-10deg) scale(0.91); }
-          68%  { transform: translate3d( 18px, -4px,  6px) rotateX( -2deg) rotateY(  8deg) rotateZ(  3deg) scale(0.98); }
-          87%  { transform: translate3d( -4px,  1px,  1px) rotateX(  1deg) rotateY( -2deg) rotateZ( -1deg) scale(1.01); }
-          100% { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);          opacity: 0; }
-        }
-        @keyframes shuffleTop2 {
-          0%   { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 1; }
-          25%  { transform: translate3d(-30px, 20px, 25px) rotateX( 12deg) rotateY(-22deg) rotateZ(-16deg) scale(0.84); }
-          50%  { transform: translate3d( 45px,-10px,-15px) rotateX( -7deg) rotateY( 16deg) rotateZ( 11deg) scale(0.90); }
-          72%  { transform: translate3d(-15px,  5px,  4px) rotateX(  4deg) rotateY( -7deg) rotateZ( -3deg) scale(0.97); }
-          90%  { transform: translate3d(  3px, -1px,  0px) rotateX( -1deg) rotateY(  2deg) rotateZ(  1deg) scale(1.00); }
-          100% { transform: translate3d(0,0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);          opacity: 0; }
+        .fan-card {
+          position: absolute;
+          left: 50%;
+          bottom: 0;
+          width: 90px;
+          height: 130px;
+          margin-left: -45px;
+          border: none;
+          cursor: pointer;
+          border-radius: 10px;
+          overflow: hidden;
+          padding: 0;
+          background: #1e1b4b;
+          box-shadow: 0 12px 28px -12px rgba(0,0,0,0.8);
+
+          /* Точка вращения внизу по центру — как реальные карты в руке */
+          transform-origin: 50% 140%;
+          transform: rotate(var(--a));
+
+          transition:
+            transform 0.35s cubic-bezier(0.3, 0.9, 0.3, 1),
+            box-shadow 0.3s,
+            opacity 0.3s;
         }
 
-        /* Settle-bounce колоды в конце */
-        @keyframes deckSettle {
-          0%,100% { transform: translate3d(0,0,0) rotateX(0deg); }
-          20%     { transform: translate3d(0,-6px, 8px) rotateX(4deg); }
-          50%     { transform: translate3d(0, 3px,-4px) rotateX(-2deg); }
-          80%     { transform: translate3d(0,-1px, 2px) rotateX(1deg); }
+        /* Приподнятая карта (первый тап) */
+        .fan-card[data-highlighted="true"],
+        .fan-card:focus-visible {
+          transform: rotate(var(--a)) translateY(-52px) scale(1.08);
+          box-shadow: 0 28px 48px -16px rgba(139,92,246,0.7),
+                      0 0 0 2px rgba(167,139,250,0.8);
+          outline: none;
+        }
+
+        /* Выбранная карта — уходит вниз и тускнеет */
+        .fan-card:disabled {
+          transform: rotate(var(--a)) translateY(20px);
+          opacity: 0.25;
+          cursor: default;
+          box-shadow: none;
+        }
+
+        .fan-card__img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 10px;
+          display: block;
+          pointer-events: none;
+        }
+
+        .fan-card__chosen {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(139,92,246,0.2);
+          color: rgba(167,139,250,0.6);
+          font-size: 28px;
+        }
+
+        .fan-card__glow {
+          position: absolute;
+          inset: 0;
+          border-radius: 10px;
+          background: rgba(167,139,250,0.15);
+          pointer-events: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .fan-card {
+            transition: box-shadow 0.2s, opacity 0.2s;
+          }
         }
       `}</style>
     </div>

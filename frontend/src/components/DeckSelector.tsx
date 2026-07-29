@@ -91,7 +91,7 @@ export default function DeckSelector({ onBack }: Props) {
                     <span className="text-purple-400 text-xs">✓ выбрана</span>
                   )}
                 </div>
-                <p className="text-slate-400 text-xs leading-relaxed line-clamp-4">
+                <p className="text-slate-400 text-xs leading-relaxed line-clamp-5">
                   {d.description}
                 </p>
                 {isHighlighted && (
