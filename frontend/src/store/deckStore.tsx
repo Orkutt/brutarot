@@ -1,5 +1,5 @@
 // src/store/deckStore.tsx
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 
 export interface DeckInfo {
   key: string
@@ -50,8 +50,38 @@ const DeckContext = createContext<DeckContextType>({
   setDeck: () => {},
 })
 
+function tgGet(key: string): Promise<string | null> {
+  return new Promise(resolve => {
+    const cs = window.Telegram?.WebApp?.CloudStorage
+    if (!cs) return resolve(null)
+    cs.getItem(key, (_err: unknown, value: string) => resolve(value ?? null))
+  })
+}
+function tgSet(key: string, value: string): Promise<void> {
+  return new Promise(resolve => {
+    const cs = window.Telegram?.WebApp?.CloudStorage
+    if (!cs) return resolve()
+    cs.setItem(key, value, () => resolve())
+  })
+}
+
 export function DeckProvider({ children }: { children: ReactNode }) {
-  const [deck, setDeck] = useState<DeckInfo>(DECKS[0])
+  const [deck, setDeckState] = useState<DeckInfo>(DECKS[0])
+
+  useEffect(() => {
+    tgGet('deck').then(saved => {
+      if (saved) {
+        const found = DECKS.find(d => d.key === saved)
+        if (found) setDeckState(found)
+      }
+    })
+  }, [])
+
+  const setDeck = async (d: DeckInfo) => {
+    setDeckState(d)
+    await tgSet('deck', d.key)
+  }
+
   return (
     <DeckContext.Provider value={{ deck, setDeck }}>
       {children}

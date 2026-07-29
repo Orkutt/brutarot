@@ -166,7 +166,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
           position: relative;
           width: 220px;
           height: 280px;
-          margin-bottom: 40px; /* небольшой отступ вниз — веер рисуется от bottom */
+          margin-bottom: 80px; /* небольшой отступ вниз — веер рисуется от bottom */
         }
 
         .fan-card {

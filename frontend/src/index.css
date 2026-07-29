@@ -1,7 +1,35 @@
 /* src/index.css */
+:root {
+  --bg-primary:     #020617;
+  --bg-secondary:   #0f172a;
+  --bg-card:        #1e1b4b;
+  --border-main:    #4c1d95;
+  --border-accent:  #7c3aed;
+  --text-primary:   #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted:     #475569;
+  --accent-main:    #7c3aed;
+  --accent-light:   #c4b5fd;
+  --accent-glow:    rgba(139,92,246,0.4);
+  --slot-empty:     #1e293b;
+  --tag-bg:         rgba(109,40,217,0.4);
+  --tag-border:     rgba(109,40,217,0.4);
+  --tag-text:       #c4b5fd;
+  --interp-bg:      rgba(30,27,75,0.6);
+  --interp-border:  rgba(67,56,202,0.5);
+}
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* Применяем переменные к базовым элементам */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
 
 /* 3D-переворот карты — это не делается через Tailwind, нужен чистый CSS */
 .perspective {

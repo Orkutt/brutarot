@@ -11,8 +11,8 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
   const { deck } = useDeck()
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center
-                    justify-center px-6 gap-8">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 gap-8"
+     style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
 
       {/* Шестерёнка в правом верхнем углу */}
       <button
@@ -36,9 +36,10 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
 
         <button
           onClick={() => onSelect('single')}
-          className="flex items-center gap-4 p-5 rounded-2xl border border-purple-800
-                     bg-purple-950/40 hover:bg-purple-900/50 active:scale-95
+          className="flex items-center gap-4 p-5 rounded-2xl border
+                    hover:bg-purple-900/50 active:scale-95
                      transition-all text-left group"
+                     style={{ borderColor: 'var(--border-accent)', background: 'var(--tag-bg)' }}
         >
           <span className="text-3xl">🃏</span>
           <div>
@@ -53,9 +54,10 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
 
         <button
           onClick={() => onSelect('triple')}
-          className="flex items-center gap-4 p-5 rounded-2xl border border-indigo-800
-                     bg-indigo-950/40 hover:bg-indigo-900/50 active:scale-95
+          className="flex items-center gap-4 p-5 rounded-2xl border
+                     hover:bg-indigo-900/50 active:scale-95
                      transition-all text-left group"
+                     style={{ borderColor: 'var(--border-accent)', background: 'var(--tag-bg)' }}
         >
           <span className="text-3xl">🎴</span>
           <div>
