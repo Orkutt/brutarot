@@ -75,17 +75,25 @@ export default function TripleSpread({ onBack }: Props) {
                 <button
                   key={key}
                   onClick={() => handleContextSelect(key)}
+                  style={{
+                    backgroundColor: context ? 'var(--accent-main)' : 'var(--interp-bg)',
+                    color: context ? 'var(--text-primary)' : 'var(--text-muted)',
+                    borderColor: context ? 'var(--border-accent)' : 'var(--interp-border)',
+                  }}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border
                               text-left text-sm transition-all duration-200 active:scale-95
                               ${isSelected
-                                ? 'bg-purple-900/70 border-purple-500 text-purple-200'
-                                : 'bg-slate-900/60 border-slate-700 text-slate-400 hover:border-purple-700'
+                                ? ''
+                                : 'hover:brightness-110'
                               }`}
                 >
                   <span>{icon}</span>
                   <span className="leading-tight">{label}</span>
-                  <span className={`ml-auto w-2 h-2 rounded-full flex-shrink-0
-                                    ${isSelected ? 'bg-purple-400' : 'bg-slate-700'}`}/>
+                  <span style={{
+                          backgroundColor: isSelected ? 'var(--accent-main)' : 'var(--slot-empty)',
+                        }}
+                        className={`ml-auto w-2 h-2 rounded-full flex-shrink-0
+                                    ${isSelected ? '' : ''}`}/>
                 </button>
               )
             })}
@@ -94,10 +102,14 @@ export default function TripleSpread({ onBack }: Props) {
             <button
               onClick={() => context && setSubScreen('mixing')}
               disabled={!context}
+              style={{
+                backgroundColor: context ? 'var(--accent-glow)' : 'var(--interp-bg)',
+                color: context ? 'var(--text-primary)' : 'var(--text-muted)',
+              }}
               className={`w-full py-3 rounded-xl text-sm font-medium transition-all
                           ${context
-                            ? 'bg-purple-700 text-white hover:bg-purple-600 active:scale-95 deck-glow'
-                            : 'bg-slate-800 text-slate-600 cursor-not-allowed'
+                            ? 'hover:brightness-110 active:scale-95 deck-glow'
+                            : 'cursor-not-allowed'
                           }`}
             >
               {context ? '→ Далее' : 'Сначала выбери тему'}
@@ -142,8 +154,8 @@ export default function TripleSpread({ onBack }: Props) {
             <div className="w-8 h-8 border-2 border-t-transparent
                             rounded-full animate-spin"
                             style={{ borderColor: 'var(--border-main)' }}/>
-            <p className="text-purple-400 text-sm"
-            style={{ color: 'var(--accent-main)' }}
+            <p className="text-sm"
+              style={{ color: 'var(--accent-main)' }}
             >Раскладываем карты...</p>
           </div>
         )}
@@ -173,10 +185,14 @@ export default function TripleSpread({ onBack }: Props) {
                     <button
                       key={i}
                       onClick={() => setActiveTab(i)}
+                      style={{
+                        borderBottomColor: activeTab === i ? 'var(--accent-main)' : 'var(--interp-bg)',
+                        color: activeTab === i ? 'var(--text-primary)' : 'var(--text-muted)',
+                      }}
                       className={`flex-1 py-2 text-xs transition-all duration-200
                                   ${activeTab === i
-                                    ? 'text-purple-300 border-b-2 border-purple-500 -mb-px' 
-                                    : 'text-slate-500 hover:text-slate-300'
+                                    ? ' border-b-2 -mb-px' 
+                                    : 'hover:text-slate-300'
                                   }`}
                     >
                       {label}
@@ -209,7 +225,7 @@ export default function TripleSpread({ onBack }: Props) {
                             style={{ color: 'var(--text-secondary)' }}>
                             Общее значение
                           </p>
-                          <p className="text-slate-300 text-sm leading-relaxed"
+                          <p className="text-sm leading-relaxed"
                             style={{ color: 'var(--text-muted)' }}>
                             {card.meaning_general}
                           </p>
@@ -223,7 +239,7 @@ export default function TripleSpread({ onBack }: Props) {
                               style={{ color: 'var(--text-secondary)' }}>
                               {contextLabel}
                             </p>
-                            <p className="text-slate-200 text-sm leading-relaxed"
+                            <p className="text-sm leading-relaxed"
                               style={{ color: 'var(--text-muted)' }}>
                               {card.meanings_by_context_value}
                             </p>
@@ -301,7 +317,7 @@ export default function TripleSpread({ onBack }: Props) {
                 <button
                   onClick={handleReset}
                   className="w-full max-w-xs py-2.5 rounded-xl border
-                             text-sm hover:bg-purple-900/40 active:scale-95
+                             text-sm hover:brightness-110 active:scale-95
                              transition-all"
                   style={{ borderColor: 'var(--border-accent)', background: 'var(--tag-bg)' }}
                 >

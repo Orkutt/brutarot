@@ -125,18 +125,22 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
 
       {/* Слоты для выбранных карт (триплет) */}
       {mode === 'triple' && (
-        <div className="flex justify-center gap-3 px-4 mt-6">
+        <div className="flex justify-center gap-3 px-4 mt-2">
           {Array.from({ length: 3 }).map((_, i) => {
             const isFilled = i < chosen.length
             return (
               <div
                 key={i}
+                style={{
+                        borderColor: isFilled ? 'var(--border-accent)' : 'var(--tag-border)',
+                        background: isFilled ? 'var(--tag-bg)' : 'var(--bg-secondary)',
+                      }}
                 className={`
                   w-16 h-24 rounded-xl border-2 border-dashed flex items-center
                   justify-center transition-all duration-500 overflow-hidden
                   ${isFilled
-                    ? 'border-purple-500 bg-purple-950/50'
-                    : 'border-slate-700 bg-slate-900/30'
+                    ? ''
+                    : ''
                   }
                 `}
               >
@@ -170,7 +174,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
           position: relative;
           width: 220px;
           height: 280px;
-          margin-bottom: 80px; /* небольшой отступ вниз — веер рисуется от bottom */
+          margin-bottom: 100px; /* небольшой отступ вниз — веер рисуется от bottom */
         }
 
         .fan-card {
@@ -231,7 +235,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
           align-items: center;
           justify-content: center;
           background: rgba(139,92,246,0.2);
-          color: rgba(167,139,250,0.6);
+          color: rgba(255,242,132,0.6);
           font-size: 28px;
         }
 
