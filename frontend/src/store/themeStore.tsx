@@ -42,7 +42,7 @@ const THEME_VARS: Record<string, Record<string, string>> = {
     '--interp-border': 'rgba(67,56,202,0.5)',
   },
   day: {
-    '--bg-primary':    '#fdf6ec',   // слоновая кость
+    '--bg-primary':    '#FBEBD5',   // слоновая кость
     '--bg-secondary':  '#faebd7',   // antique white
     '--bg-card':       '#fff8f0',
     '--border-main':   '#d4a0a0',   // розово-коричневый

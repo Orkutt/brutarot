@@ -26,10 +26,10 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
 
       <div className="text-center">
         <h1 className="text-4xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>У ведьмы-гадалки</h1>
-        <p className="text-slate-500 text-sm">
-          Колода: <span className="text-slate-400">{deck.name}</span>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          Колода: <span className="" style={{ color: 'var(--text-secondary)' }}>{deck.name}</span>
         </p>
-        <p className="text-slate-500 text-sm">Выбери тип расклада</p>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Выбери тип расклада</p>
       </div>
 
       <div className="flex flex-col gap-4 w-full max-w-xs">
@@ -41,13 +41,13 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
                      transition-all text-left group"
                      style={{ borderColor: 'var(--border-accent)', background: 'var(--tag-bg)' }}
         >
-          <span className="text-3xl">🃏</span>
+          <span className="text-3xl"></span>
           <div>
             <p className="font-medium group-hover:text-purple-200 transition-colors"
             style={{ color: 'var(--text-primary)' }}>
               Одна карта
             </p>
-            <p className="text-slate-500 font-cormorant text-xs mt-0.5">
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
               Быстрый ответ или карта дня
             </p>
           </div>
@@ -60,13 +60,13 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
                      transition-all text-left group"
                      style={{ borderColor: 'var(--border-accent)', background: 'var(--tag-bg)' }}
         >
-          <span className="text-3xl">🎴</span>
+          <span className="text-3xl"></span>
           <div>
             <p className="font-medium group-hover:text-indigo-200 transition-colors"
             style={{ color: 'var(--text-primary)' }}>
               Триплет
             </p>
-            <p className="text-slate-500 font-cormorant text-xs mt-0.5">
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
               Прошлое · Настоящее · Будущее
             </p>
           </div>
@@ -80,12 +80,14 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
                      transition-all text-left group opacity-60"
           // opacity-60 и cursor пока говорят что режим в разработке
         >
-          <span className="text-3xl">✝</span>
+          <span className="text-3xl"></span>
           <div>
-            <p className="text-white font-medium group-hover:text-teal-200 transition-colors">
+            <p className="font-medium group-hover:text-teal-200 transition-colors"
+              style={{ color: 'var(--text-primary)' }}>
               Кельтский крест
             </p>
-            <p className="text-slate-500 text-xs mt-0.5">Универсальный расклад</p>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}
+              >Универсальный расклад</p>
           </div>
         </button>
 

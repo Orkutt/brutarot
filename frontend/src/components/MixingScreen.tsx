@@ -46,23 +46,26 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
+    <div className="min-h-screen flex flex-col"
+      style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
 
       <header className="flex items-center px-4 pt-6 pb-3 gap-3">
         <button
           onClick={onBack}
-          className="text-slate-400 hover:text-white transition-colors text-sm"
-        >
+          className="absolute left-4 transition-colors text-sm"
+            style={{ color: 'var(--text-primary)' }}>
           ← Назад
         </button>
-        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center pr-8">
-          {mode === 'single' ? '✦ Одна карта' : 'Триплет'}
+        <h1 className="text-lg font-semibold flex-1 text-center"
+          style={{ color: 'var(--accent-light)' }}>
+          {mode === 'single' ? 'Одна карта' : 'Триплет'}
         </h1>
       </header>
 
       {/* Подсказка */}
       <div className="text-center px-4 mt-1 min-h-[36px]">
-        <p className="text-slate-400 text-sm">
+        <p className="text-sm"
+          style={{ color: 'var(--text-secondary)' }}>
           {chosen.length === 0 && highlighted === null &&
             'Выбери карту из веера'}
           {highlighted !== null &&
@@ -144,7 +147,8 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
                     className="w-full h-full object-cover opacity-80"
                   />
                 ) : (
-                  <span className="text-slate-600 text-sm">{i + 1}</span>
+                  <span className="text-sm"
+                    style={{ color: 'var(--text-muted)' }}>{i + 1}</span>
                 )}
               </div>
             )

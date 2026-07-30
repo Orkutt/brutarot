@@ -51,17 +51,21 @@ export default function TripleSpread({ onBack }: Props) {
   // Экран выбора контекста
   if (subScreen === 'context') {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex flex-col">
+      <div className="min-h-screen flex flex-col"
+        style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
         <header className="relative flex items-center px-4 pt-6 pb-3 gap-3">
-          <button onClick={onBack} className="absolute left-4 text-slate-400 hover:text-white text-sm">
+          <button onClick={onBack} className="absolute left-4 hover:text-white text-sm"
+          style={{ color: 'var(--text-secondary)' }}>
             ← Назад
           </button>
-          <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center">
+          <h1 className="text-lg font-semibold flex-1 text-center"
+            style={{ color: 'var(--accent-light)' }}>
             Триплет
           </h1>
         </header>
         <main className="flex-1 px-4 pb-10">
-          <p className="text-slate-400 text-sm text-center mt-4 mb-4">
+          <p className="text-sm text-center mt-4 mb-4"
+            style={{ color: 'var(--text-secondary)' }}>
             Выбери тему гадания
           </p>
           <div className="grid grid-cols-2 gap-2 max-w-sm mx-auto">
@@ -117,12 +121,15 @@ export default function TripleSpread({ onBack }: Props) {
 
   // Экран расклада
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
+    <div className="min-h-screen flex flex-col"
+      style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       <header className="relative flex items-center px-4 pt-6 pb-3 gap-3">
-        <button onClick={handleReset} className="absolute left-4 text-slate-400 hover:text-white text-sm">
+        <button onClick={handleReset} className="absolute left-4 hover:text-white text-sm"
+        style={{ color: 'var(--text-secondary)' }}>
           ←
         </button>
-        <h1 className="text-lg font-semibold text-purple-300 flex-1 text-center">
+        <h1 className="text-lg font-semibold flex-1 text-center"
+          style={{ color: 'var(--accent-light)' }}>
           Триплет · {contextLabel}
         </h1>
       </header>
@@ -132,9 +139,12 @@ export default function TripleSpread({ onBack }: Props) {
         {/* Загрузка */}
         {isLoading && (
           <div className="flex flex-col items-center gap-3 mt-16">
-            <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent
-                            rounded-full animate-spin"/>
-            <p className="text-purple-400 text-sm">Раскладываем карты...</p>
+            <div className="w-8 h-8 border-2 border-t-transparent
+                            rounded-full animate-spin"
+                            style={{ borderColor: 'var(--border-main)' }}/>
+            <p className="text-purple-400 text-sm"
+            style={{ color: 'var(--accent-main)' }}
+            >Раскладываем карты...</p>
           </div>
         )}
 
@@ -165,7 +175,7 @@ export default function TripleSpread({ onBack }: Props) {
                       onClick={() => setActiveTab(i)}
                       className={`flex-1 py-2 text-xs transition-all duration-200
                                   ${activeTab === i
-                                    ? 'text-purple-300 border-b-2 border-purple-500 -mb-px'
+                                    ? 'text-purple-300 border-b-2 border-purple-500 -mb-px' 
                                     : 'text-slate-500 hover:text-slate-300'
                                   }`}
                     >
@@ -175,7 +185,8 @@ export default function TripleSpread({ onBack }: Props) {
                 </div>
 
                 {/* Содержимое активного таба */}
-                <div className="w-full max-w-xs slide-up space-y-3">
+                <div className="w-full max-w-xs slide-up space-y-3
+                  style={{ color: 'var(--accent-light)', borderBottomColor: 'var(--accent-main)' }}">
                   {(() => {
                     const card = result.cards[activeTab]
                     return (
@@ -184,30 +195,36 @@ export default function TripleSpread({ onBack }: Props) {
                         <div className="flex flex-wrap gap-1.5">
                           {card.keywords.map(kw => (
                             <span key={kw}
-                              className="px-2 py-0.5 rounded-full bg-purple-900/60
-                                         text-purple-300 text-xs border border-purple-700/50">
+                              className="px-2 py-0.5 rounded-full text-xs border"
+                                style={{ background: 'var(--tag-bg)', borderColor: 'var(--tag-border)', color: 'var(--tag-text)' }}>
                               {kw}
                             </span>
                           ))}
                         </div>
 
                         {/* Общее значение */}
-                        <div className="bg-slate-900/80 rounded-xl p-3 border border-slate-700/50">
-                          <p className="text-purple-400 text-xs uppercase tracking-wider mb-1.5">
+                        <div className="rounded-xl p-3 border"
+                          style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-main)' }}>
+                          <p className="text-xs uppercase tracking-wider mb-1.5"
+                            style={{ color: 'var(--text-secondary)' }}>
                             Общее значение
                           </p>
-                          <p className="text-slate-300 text-sm leading-relaxed">
+                          <p className="text-slate-300 text-sm leading-relaxed"
+                            style={{ color: 'var(--text-muted)' }}>
                             {card.meaning_general}
                           </p>
                         </div>
 
                         {/* Значение по запросу */}
                         {card.meanings_by_context_value && (
-                          <div className="bg-indigo-950/60 rounded-xl p-3 border border-indigo-800/50">
-                            <p className="text-indigo-300 text-xs uppercase tracking-wider mb-1.5">
+                          <div className="rounded-xl p-3 border"
+                            style={{ background: 'var(--interp-bg)', borderColor: 'var(--interp-border)' }}>
+                            <p className="text-xs uppercase tracking-wider mb-1.5"
+                              style={{ color: 'var(--text-secondary)' }}>
                               {contextLabel}
                             </p>
-                            <p className="text-slate-200 text-sm leading-relaxed">
+                            <p className="text-slate-200 text-sm leading-relaxed"
+                              style={{ color: 'var(--text-muted)' }}>
                               {card.meanings_by_context_value}
                             </p>
                           </div>
@@ -220,7 +237,8 @@ export default function TripleSpread({ onBack }: Props) {
                 {/* Комбинации карт */}
                 {Object.keys(result.combos).length > 0 && (
                   <div className="w-full max-w-xs slide-up space-y-2">
-                    <p className="text-purple-400 text-xs uppercase tracking-wider text-center">
+                    <p className="text-xs uppercase tracking-wider text-center"
+                      style={{ color: 'var(--text-secondary)' }}>
                       Взаимодействие карт
                     </p>
                     {Object.entries(result.combos).map(([key, text]) => {
@@ -228,11 +246,14 @@ export default function TripleSpread({ onBack }: Props) {
                       const [a, b] = key.split('-')
                       return (
                         <div key={key}
-                          className="bg-purple-950/50 rounded-xl p-3 border border-purple-800/50">
-                          <p className="text-purple-300 text-xs mb-1">
+                          className="rounded-xl p-3 border"
+                            style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}>
+                          <p className="text-xs mb-1"
+                            style={{ color: 'var(--accent-light)' }}>
                             {labels[Number(a) - 1]} + {labels[Number(b) - 1]}
                           </p>
-                          <p className="text-slate-300 text-sm leading-relaxed">{text}</p>
+                          <p className="text-sm leading-relaxed"
+                            style={{ color: 'var(--text-secondary)' }}>{text}</p>
                         </div>
                       )
                     })}
@@ -240,16 +261,19 @@ export default function TripleSpread({ onBack }: Props) {
                 )}
 
                 {/* Поле для LLM */}
-                <div className="w-full max-w-xs slide-up bg-slate-900/80 rounded-xl p-4
-                                border border-slate-700/50 min-h-[100px]">
+                <div className="w-full max-w-xs slide-up rounded-xl p-4
+                                border min-h-[100px]"
+                                style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-main)' }}>
                   <div className="flex items-center gap-2 mb-2">
-                    <p className="text-slate-500 text-xs uppercase tracking-wider">
+                    <p className="text-xs uppercase tracking-wider"
+                      style={{ color: 'var(--text-secondary)' }}>
                       Общая интерпретация расклада
                     </p>
                   </div>
 
                   {llmStatus === 'idle' && (
-                    <p className="text-slate-600 text-sm italic">Здесь появится интерпретация от ИИ...</p>
+                    <p className="text-sm italic"
+                      style={{ color: 'var(--text-muted)' }}>Здесь появится интерпретация от ИИ...</p>
                   )}
 
                   {llmStatus === 'loading' && (
@@ -261,7 +285,8 @@ export default function TripleSpread({ onBack }: Props) {
                   )}
 
                   {llmStatus === 'done' && (
-                    <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-line">
+                    <p className="text-sm leading-relaxed whitespace-pre-line"
+                      style={{ color: 'var(--text-secondary)' }}>
                       {summary}
                     </p>
                   )}
@@ -275,9 +300,10 @@ export default function TripleSpread({ onBack }: Props) {
 
                 <button
                   onClick={handleReset}
-                  className="w-full max-w-xs py-2.5 rounded-xl border border-purple-700
-                             text-purple-300 text-sm hover:bg-purple-900/40 active:scale-95
+                  className="w-full max-w-xs py-2.5 rounded-xl border
+                             text-sm hover:bg-purple-900/40 active:scale-95
                              transition-all"
+                  style={{ borderColor: 'var(--border-accent)', background: 'var(--tag-bg)' }}
                 >
                   Новый расклад
                 </button>
