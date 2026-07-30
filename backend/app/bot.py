@@ -4,6 +4,7 @@ from aiogram.filters import Command
 from aiogram.types import Message, InlineKeyboardButton, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from app.config import settings
+import os
 
 # Router — это как "группа маршрутов" в FastAPI.
 # В маленьком проекте он один, но структура уже правильная.
@@ -53,3 +54,12 @@ async def send_spread_result(
         text=text,
         parse_mode="Markdown"
     )
+
+    async def setup_webhook(bot: Bot, webhook_url: str) -> None:
+        await bot.set_webhook(
+        url=f"{webhook_url}/webhook",
+        drop_pending_updates=True
+    )
+
+async def remove_webhook(bot: Bot) -> None:
+    await bot.delete_webhook(drop_pending_updates=True)

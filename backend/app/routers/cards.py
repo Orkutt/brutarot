@@ -5,6 +5,8 @@ from app.services.card_service import draw_random_card, draw_triple, get_all_car
 from app.services.gigachat_service import get_llm_summary
 from app.services.cache_service import get_cached, set_cached
 from app.bot import get_bot_and_dispatcher, send_spread_result
+from app.main import bot_instance 
+
 
 router = APIRouter(prefix="/api", tags=["cards"])
 
@@ -67,15 +69,20 @@ class SendResultRequest(BaseModel):
 
 @router.post("/send-result")
 async def send_result(req: SendResultRequest):
-    """Отправляет итог расклада сообщением в чат с ботом."""
+    print(f"📨 send-result: user_id={req.user_id}, summary_len={len(req.summary)}")
     try:
-        bot, _ = get_bot_and_dispatcher()
+        if bot_instance is None:
+            print("❌ bot_instance is None!")
+            raise HTTPException(status_code=503, detail="Бот не инициализирован")
+
         await send_spread_result(
             user_id=req.user_id,
             cards=req.cards,
             summary=req.summary,
-            bot=bot
+            bot=bot_instance   # ← передаём живой экземпляр
         )
+        print(f"✅ Сообщение отправлено пользователю {req.user_id}")
         return {"ok": True}
     except Exception as e:
+        print(f"❌ Ошибка отправки: {e}")
         raise HTTPException(status_code=500, detail=str(e))
