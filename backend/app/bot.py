@@ -31,3 +31,25 @@ def get_bot_and_dispatcher():
     dp = Dispatcher()
     dp.include_router(router)
     return bot, dp
+
+async def send_spread_result(
+    user_id: int,
+    cards: list[dict],
+    summary: str,
+    bot: Bot
+) -> None:
+    """Отправляет результат расклада в чат пользователя с ботом."""
+
+    # Формируем строку с картами
+    cards_line = " — ".join(
+        f"{c['name_ru']}, {'перевёрнутая' if c['reversed'] else 'прямая'}"
+        for c in cards
+    )
+
+    text = f"🔮 *Расклад Триплет*\n\n{cards_line}\n\n{summary}"
+
+    await bot.send_message(
+        chat_id=user_id,
+        text=text,
+        parse_mode="Markdown"
+    )

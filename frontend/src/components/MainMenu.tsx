@@ -36,9 +36,9 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
 
         <button
           onClick={() => onSelect('single')}
-          className="flex items-center justify-center gap-4 p-5 rounded-2xl border
+          className="flex items-center gap-4 p-5 rounded-2xl border
                     hover:brightness-110 active:scale-95
-                     transition-all text-left group"
+                     transition-all text-center group"
                      style={{ borderColor: 'var(--border-accent)', background: 'var(--tag-bg)' }}
         >
           <span className="text-3xl"></span>
@@ -55,9 +55,9 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
 
         <button
           onClick={() => onSelect('triple')}
-          className="flex items-center justify-center gap-4 p-5 rounded-2xl border
+          className="flex items-center gap-4 p-5 rounded-2xl border
                      hover:brightness-110 active:scale-95
-                     transition-all text-left group"
+                     transition-all text-center group"
                      style={{ borderColor: 'var(--border-accent)', background: 'var(--tag-bg)' }}
         >
           <span className="text-3xl"></span>
@@ -75,9 +75,9 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
         {/* Кельтский крест */}
         <button
           onClick={() => onSelect('celtic')}
-          className="flex items-center justify-center gap-4 p-5 rounded-2xl border border-teal-800
+          className="flex items-center gap-4 p-5 rounded-2xl border border-teal-800
                      bg-teal-950/40 hover:brightness-110 active:scale-95
-                     transition-all text-left group opacity-60"
+                     transition-all text-center group opacity-60"
           // opacity-60 и cursor пока говорят что режим в разработке
         >
           <span className="text-3xl"></span>

@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { TarotCard } from '../types'
 import { API_URL } from '../constants'
+import { getTelegramUserId } from '../utils/telegram'
 
 type InterpretStatus = 'idle' | 'loading' | 'done' | 'error'
 
@@ -32,6 +33,26 @@ export function useInterpret() {
       setSummary(data.summary)
       setFromCache(data.from_cache)
       setStatus('done')
+
+      // Отправляем результат в чат с ботом
+      const userId = getTelegramUserId()
+      if (userId && data.summary) {
+        fetch(`${API_URL}/api/send-result`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            cards,
+            summary: data.summary,
+          }),
+        }).catch(() => {
+          // Тихо игнорируем — отправка в чат не критична
+        })
+      }
+      
     } catch (e) {
       setStatus('error')
     }
@@ -41,3 +62,4 @@ export function useInterpret() {
 
   return { summary, status, fromCache, interpret, reset }
 }
+

@@ -206,8 +206,8 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
         .fan-card[data-highlighted="true"],
         .fan-card:focus-visible {
           transform: rotate(var(--a)) translateY(-52px) scale(1.08);
-          box-shadow: 0 28px 48px -16px rgba(139,92,246,0.7),
-                      0 0 0 2px rgba(167,139,250,0.8);
+          box-shadow: 0 28px 48px -16px --accent-glow,
+                      0 0 0 2px --accent-glow, 0.8;
           outline: none;
         }
 
@@ -234,7 +234,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(139,92,246,0.2);
+          background: --accent-glow, 0.2;
           color: rgba(255,242,132,0.6);
           font-size: 28px;
         }
@@ -243,7 +243,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
           position: absolute;
           inset: 0;
           border-radius: 10px;
-          background: rgba(167,139,250,0.15);
+          background: --accent-main, 0.15;
           pointer-events: none;
         }
 

@@ -16,13 +16,16 @@ export default function CardInterpretation({ card }: Props) {
 
       {/* Название карты */}
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-white">
+        <h2 className="text-xl font-semibold"
+          style={{ color: 'var(--text-primary)' }}>
           {card.name_ru}
         </h2>
-        <p className="text-slate-500 text-sm mt-0.5 italic">
+        <p className="text-sm mt-0.5 italic"
+          style={{ color: 'var(--text-primary)' }}>
           {card.name_en}
         </p>
-        <p className="text-purple-400 text-xs mt-1">
+        <p className="text-purple-400 text-xs mt-1"
+          style={{ color: 'var(--text-secondary)' }}>
           {card.arcana} · {card.elemental}
           {card.reversed && (
             <span className="ml-2 text-rose-400">· Перевёрнутая</span>
@@ -36,8 +39,12 @@ export default function CardInterpretation({ card }: Props) {
           {card.keywords.map(kw => (
             <span
               key={kw}
-              className="px-2.5 py-0.5 rounded-full bg-purple-900/60 text-purple-300
-                         text-xs border border-purple-700/50"
+              style={{
+                    backgroundColor: 'var(--bg-secondary)',
+                    color: 'var(--accent-main)',
+                    borderColor: 'var(--border-main)'
+                  }}
+              className="px-2.5 py-0.5 rounded-full text-xs border"
             >
               {kw}
             </span>
@@ -47,25 +54,31 @@ export default function CardInterpretation({ card }: Props) {
 
       {/* Общее значение карты */}
       {card.meaning_general && (
-        <div className="bg-slate-900/80 rounded-xl p-4 border border-slate-700/50">
-          <p className="text-purple-400 text-xs uppercase tracking-wider mb-2">
+        <div className="rounded-xl p-4 border"
+        style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-main)' }}>
+          <p className="text-xs uppercase tracking-wider mb-2"
+            style={{ color: 'var(--text-secondary)' }}>
             Общее значение
           </p>
-          <p className="text-slate-300 text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed"
+            style={{ color: 'var(--text-muted)' }}>
             {card.meaning_general}
           </p>
         </div>
       )}
 
       {/* Интерпретация по контексту — большое поле, текст может быть объёмным */}
-      <div className="bg-indigo-950/60 rounded-xl p-4 border border-indigo-800/50">
+      <div className="rounded-xl p-4 border"
+        style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-main)' }}>
         {showContextLabel && (
-          <p className="text-indigo-300 text-xs uppercase tracking-wider mb-1.5">
+          <p className="text-xs uppercase tracking-wider mb-1.5"
+            style={{ color: 'var(--text-secondary)' }}>
             {contextLabel}
           </p>
 )}
         {/* min-h чтобы поле не сжималось на коротких текстах */}
-        <p className="text-slate-200 text-sm leading-relaxed min-h-[80px] whitespace-pre-line">
+        <p className="text-sm leading-relaxed min-h-[80px] whitespace-pre-line"
+          style={{ color: 'var(--text-muted)' }}>
           {card.interpretation}
         </p>
       </div>

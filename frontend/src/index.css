@@ -78,8 +78,8 @@ body {
 
 /* Пульсация колоды — намекает что надо нажать */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 12px 2px rgba(139, 92, 246, 0.4); }
-  50%       { box-shadow: 0 0 28px 6px rgba(139, 92, 246, 0.8); }
+  0%, 100% { box-shadow: 0 0 12px 2px --accent-glow, 0.4; }
+  50%       { box-shadow: 0 0 28px 6px --accent-glow, 0.8; }
 }
 
 .deck-glow {

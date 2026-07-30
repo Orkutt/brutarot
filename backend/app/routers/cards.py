@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from app.services.card_service import draw_random_card, draw_triple, get_all_cards
 from app.services.gigachat_service import get_llm_summary
 from app.services.cache_service import get_cached, set_cached
+from app.bot import get_bot_and_dispatcher, send_spread_result
 
 router = APIRouter(prefix="/api", tags=["cards"])
 
@@ -58,3 +59,23 @@ async def interpret(req: InterpretRequest):
 def list_cards():
     cards = get_all_cards()
     return {"total": len(cards), "cards": cards}
+
+class SendResultRequest(BaseModel):
+    user_id: int
+    cards: list[dict]
+    summary: str
+
+@router.post("/send-result")
+async def send_result(req: SendResultRequest):
+    """Отправляет итог расклада сообщением в чат с ботом."""
+    try:
+        bot, _ = get_bot_and_dispatcher()
+        await send_spread_result(
+            user_id=req.user_id,
+            cards=req.cards,
+            summary=req.summary,
+            bot=bot
+        )
+        return {"ok": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
