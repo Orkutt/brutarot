@@ -55,11 +55,10 @@ async def send_spread_result(
         parse_mode="Markdown"
     )
 
-    async def setup_webhook(bot: Bot, webhook_url: str) -> None:
-        await bot.set_webhook(
-        url=f"{webhook_url}/webhook",
-        drop_pending_updates=True
-    )
+async def setup_webhook(bot: Bot, webhook_url: str) -> None:
+    await bot.set_webhook(
+    url=f"{webhook_url}/webhook",
+    drop_pending_updates=True)
 
 async def remove_webhook(bot: Bot) -> None:
     await bot.delete_webhook(drop_pending_updates=True)
