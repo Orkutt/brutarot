@@ -1,67 +1,80 @@
 # app/main.py
-import asyncio
+import asyncio, os
 from contextlib import asynccontextmanager
 from pathlib import Path
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from app.bot import get_bot_and_dispatcher
+from starlette.middleware.base import BaseHTTPMiddleware
+from app.bot import get_bot_and_dispatcher, setup_webhook, remove_webhook
+from app.bot_instance import set_bot          # ← импортируем setter
 from app.routers import cards
-import os
 
-
-CARDS_ROOT = Path(os.getenv("DATA_DIR", Path(__file__).parent.parent.parent)) / "cards"
-
+WEBHOOK_URL   = os.getenv("WEBHOOK_URL", "")
+CARDS_ROOT    = Path(os.getenv("DATA_DIR", Path(__file__).parent.parent.parent)) / "cards"
 FRONTEND_DIST = Path(__file__).parent.parent.parent / "frontend" / "dist"
 
-bot_instance = None
-dp_instance = None
+class NgrokSkipWarningMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        response.headers["ngrok-skip-browser-warning"] = "true"
+        return response
+
 polling_task = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global bot_instance, dp_instance, polling_task
-    bot_instance, dp_instance = get_bot_and_dispatcher()
-    polling_task = asyncio.create_task(
-        dp_instance.start_polling(bot_instance)
-    )
-    print("✅ Бот запущен в режиме polling")
+    global polling_task
+    bot, dp = get_bot_and_dispatcher()
+    set_bot(bot)                              # ← сохраняем в синглтон
+
+    if WEBHOOK_URL:
+        await setup_webhook(bot, WEBHOOK_URL)
+        print(f"✅ Бот запущен в режиме webhook: {WEBHOOK_URL}")
+    else:
+        polling_task = asyncio.create_task(dp.start_polling(bot))
+        print("✅ Бот запущен в режиме polling")
+
     yield
-    polling_task.cancel()
-    await bot_instance.session.close()
+
+    if WEBHOOK_URL:
+        await remove_webhook(bot)
+    elif polling_task:
+        polling_task.cancel()
+    await bot.session.close()
     print("🛑 Бот остановлен")
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(NgrokSkipWarningMiddleware)
+app.add_middleware(CORSMiddleware, allow_origins=["*"],
+                   allow_methods=["*"], allow_headers=["*"])
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Раздаём всю папку cards — внутри могут быть classic/, botanical/ и т.д.
 if CARDS_ROOT.exists():
     app.mount("/cards", StaticFiles(directory=CARDS_ROOT), name="cards")
-else:
-    print(f"⚠️  Папка с картами не найдена: {CARDS_ROOT}")
 
-# Подключаем роутер
 app.include_router(cards.router)
 
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
-
-
 if FRONTEND_DIST.exists():
-    # Раздаём статику фронта (JS, CSS, картинки сборки)
     app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
 
-    # Все остальные пути → index.html (SPA-роутинг)
     @app.get("/{full_path:path}")
     def serve_spa(full_path: str):
-        index = FRONTEND_DIST / "index.html"
-        return FileResponse(index)
+        return FileResponse(FRONTEND_DIST / "index.html")
+
+@app.post("/webhook")
+async def webhook(request: Request):
+    from aiogram.types import Update
+    from app.bot import get_bot_and_dispatcher
+    from app.bot_instance import get_bot
+    _, dp = get_bot_and_dispatcher()
+    bot = get_bot()
+    data = await request.json()
+    update = Update.model_validate(data)
+    await dp.feed_update(bot, update)
+    return {"ok": True}
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}

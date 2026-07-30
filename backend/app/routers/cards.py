@@ -4,9 +4,8 @@ from pydantic import BaseModel
 from app.services.card_service import draw_random_card, draw_triple, get_all_cards
 from app.services.gigachat_service import get_llm_summary
 from app.services.cache_service import get_cached, set_cached
-from app.bot import get_bot_and_dispatcher, send_spread_result
-from app.main import bot_instance 
-
+from app.bot import send_spread_result
+from app.bot_instance import get_bot              # ← из синглтона, не из main
 
 router = APIRouter(prefix="/api", tags=["cards"])
 
@@ -35,54 +34,43 @@ class InterpretRequest(BaseModel):
 
 @router.post("/interpret")
 async def interpret(req: InterpretRequest):
-    """
-    Получает LLM-интерпретацию расклада.
-    Сначала проверяет кэш — если расклад уже встречался, возвращает сохранённый ответ.
-    """
     try:
-        # Проверяем кэш
         cached = get_cached(req.cards, req.context)
         if cached:
             return {"summary": cached, "from_cache": True}
-
-        # Запрашиваем GigaChat
         summary = await get_llm_summary(req.cards, req.combos, req.context)
-
-        # Сохраняем в кэш
         set_cached(req.cards, req.context, summary)
-
         return {"summary": summary, "from_cache": False}
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка LLM: {e}")
 
-
-@router.get("/cards")
-def list_cards():
-    cards = get_all_cards()
-    return {"total": len(cards), "cards": cards}
 
 class SendResultRequest(BaseModel):
     user_id: int
     cards: list[dict]
     summary: str
 
+
 @router.post("/send-result")
 async def send_result(req: SendResultRequest):
     print(f"📨 send-result: user_id={req.user_id}, summary_len={len(req.summary)}")
     try:
-        if bot_instance is None:
-            print("❌ bot_instance is None!")
+        bot = get_bot()                          # ← берём живой экземпляр
+        if bot is None:
             raise HTTPException(status_code=503, detail="Бот не инициализирован")
-
         await send_spread_result(
             user_id=req.user_id,
             cards=req.cards,
             summary=req.summary,
-            bot=bot_instance   # ← передаём живой экземпляр
+            bot=bot
         )
         print(f"✅ Сообщение отправлено пользователю {req.user_id}")
         return {"ok": True}
     except Exception as e:
         print(f"❌ Ошибка отправки: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/cards")
+def list_cards():
+    return {"total": len(get_all_cards()), "cards": get_all_cards()}
