@@ -222,11 +222,11 @@ export default function TripleSpread({ onBack }: Props) {
                         <div className="rounded-xl p-3 border"
                           style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-main)' }}>
                           <p className="text-xs uppercase tracking-wider mb-1.5"
-                            style={{ color: 'var(--text-secondary)' }}>
+                            style={{ color: 'var(--text-primary)' }}>
                             Общее значение
                           </p>
                           <p className="text-sm leading-relaxed"
-                            style={{ color: 'var(--text-muted)' }}>
+                            style={{ color: 'var(--text-secondary)' }}>
                             {card.meaning_general}
                           </p>
                         </div>
@@ -236,11 +236,11 @@ export default function TripleSpread({ onBack }: Props) {
                           <div className="rounded-xl p-3 border"
                             style={{ background: 'var(--interp-bg)', borderColor: 'var(--interp-border)' }}>
                             <p className="text-xs uppercase tracking-wider mb-1.5"
-                              style={{ color: 'var(--text-secondary)' }}>
+                              style={{ color: 'var(--text-primary)' }}>
                               {contextLabel}
                             </p>
                             <p className="text-sm leading-relaxed"
-                              style={{ color: 'var(--text-muted)' }}>
+                              style={{ color: 'var(--text-secondary)' }}>
                               {card.meanings_by_context_value}
                             </p>
                           </div>
@@ -254,7 +254,7 @@ export default function TripleSpread({ onBack }: Props) {
                 {Object.keys(result.combos).length > 0 && (
                   <div className="w-full max-w-xs slide-up space-y-2">
                     <p className="text-xs uppercase tracking-wider text-center"
-                      style={{ color: 'var(--text-secondary)' }}>
+                      style={{ color: 'var(--text-primary)' }}>
                       Взаимодействие карт
                     </p>
                     {Object.entries(result.combos).map(([key, text]) => {
@@ -282,21 +282,23 @@ export default function TripleSpread({ onBack }: Props) {
                                 style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-main)' }}>
                   <div className="flex items-center gap-2 mb-2">
                     <p className="text-xs uppercase tracking-wider"
-                      style={{ color: 'var(--text-secondary)' }}>
+                      style={{ color: 'var(--text-primary)' }}>
                       Общая интерпретация расклада
                     </p>
                   </div>
 
                   {llmStatus === 'idle' && (
                     <p className="text-sm italic"
-                      style={{ color: 'var(--text-muted)' }}>Здесь появится интерпретация от ИИ...</p>
+                      style={{ color: 'var(--text-secondary)' }}>Здесь появится интерпретация от ИИ...</p>
                   )}
 
                   {llmStatus === 'loading' && (
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border border-purple-500 border-t-transparent
-                                      rounded-full animate-spin flex-shrink-0"/>
-                      <p className="text-purple-400 text-sm italic">Таролог думает...</p>
+                      <div className="w-4 h-4 border border-t-transparent
+                                      rounded-full animate-spin flex-shrink-0"
+                                      style={{ borderColor: 'var(--border-accent)' }}/>
+                      <p className="text-sm italic"
+                        style={{ color: 'var(--text-secondary)' }}>Таролог думает...</p>
                     </div>
                   )}
 
@@ -308,7 +310,7 @@ export default function TripleSpread({ onBack }: Props) {
                   )}
 
                   {llmStatus === 'error' && (
-                    <p className="text-rose-400 text-sm italic">
+                    <p className="text-rose-600 text-sm italic">
                       Не удалось получить интерпретацию. Попробуй позже.
                     </p>
                   )}
