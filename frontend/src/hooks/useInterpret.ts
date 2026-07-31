@@ -7,8 +7,8 @@ import { getTelegramUserId } from '../utils/telegram'
 type InterpretStatus = 'idle' | 'loading' | 'done' | 'error'
 
 export function useInterpret() {
-  const [summary, setSummary]   = useState<string>('')
-  const [status, setStatus]     = useState<InterpretStatus>('idle')
+  const [summary, setSummary]     = useState<string>('')
+  const [status, setStatus]       = useState<InterpretStatus>('idle')
   const [fromCache, setFromCache] = useState(false)
 
   const interpret = async (
@@ -34,26 +34,43 @@ export function useInterpret() {
       setFromCache(data.from_cache)
       setStatus('done')
 
-      // Отправляем результат в чат с ботом
+      // Диагностика отправки в чат
       const userId = getTelegramUserId()
-      if (userId && data.summary) {
-        fetch(`${API_URL}/api/send-result`, {
+      console.log('🔑 user_id:', userId)
+      console.log('📝 summary length:', data.summary?.length)
+      console.log('🌐 API_URL:', API_URL)
+
+      if (!userId) {
+        console.warn('⚠️ userId is null — приложение открыто не в Telegram или initDataUnsafe недоступен')
+        return
+      }
+
+      if (!data.summary) {
+        console.warn('⚠️ summary пустой — не отправляем')
+        return
+      }
+
+      console.log('📤 Отправляем запрос на /api/send-result...')
+      try {
+        const sendRes = await fetch(`${API_URL}/api/send-result`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'ngrok-skip-browser-warning': 'true',
           },
-          body: JSON.stringify({
-            user_id: userId,
-            cards,
-            summary: data.summary,
-          }),
-        }).catch(() => {
-          // Тихо игнорируем — отправка в чат не критична
+          body: JSON.stringify({ user_id: userId, cards, summary: data.summary }),
         })
+        const sendData = await sendRes.json()
+        console.log('📬 Ответ /api/send-result:', sendData)
+        if (!sendRes.ok) {
+          console.error('❌ send-result вернул ошибку:', sendRes.status, sendData)
+        }
+      } catch (sendErr) {
+        console.error('❌ Ошибка fetch к /api/send-result:', sendErr)
       }
-      
+
     } catch (e) {
+      console.error('❌ Ошибка interpret:', e)
       setStatus('error')
     }
   }
@@ -62,4 +79,3 @@ export function useInterpret() {
 
   return { summary, status, fromCache, interpret, reset }
 }
-

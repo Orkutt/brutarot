@@ -24,7 +24,7 @@ export default function CardInterpretation({ card }: Props) {
           style={{ color: 'var(--text-primary)' }}>
           {card.name_en}
         </p>
-        <p className="text-purple-400 text-xs mt-1"
+        <p className="text-xs mt-1"
           style={{ color: 'var(--text-primary)' }}>
           {card.arcana} · {card.elemental}
           {card.reversed && (

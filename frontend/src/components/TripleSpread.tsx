@@ -330,6 +330,16 @@ export default function TripleSpread({ onBack }: Props) {
           </>
         )}
 
+        {/* Временный отладочный блок — удалить после диагностики */}
+{isDone && (
+  <div className="w-full max-w-xs mt-2 p-3 rounded-xl bg-slate-800 text-xs text-slate-400 break-all">
+    <p>user_id: {window.Telegram?.WebApp?.initDataUnsafe?.user?.id ?? 'null'}</p>
+    <p>API: {import.meta.env.VITE_API_URL ?? 'undefined'}</p>
+    <p>CloudStorage: {window.Telegram?.WebApp?.CloudStorage ? 'доступен' : 'недоступен'}</p>
+  </div>
+)}
+
+
         {/* Ошибка */}
         {phase === 'error' && (
           <div className="flex flex-col items-center gap-4 mt-10 text-center">
