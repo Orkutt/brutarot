@@ -20,11 +20,6 @@ export default function App() {
   const { deck } = useDeck()
   const { card, status, error, draw, reset } = useDrawCard()
 
-  useEffect(() => {
-    const webApp = window.Telegram?.WebApp
-    if (webApp) { webApp.ready(); webApp.expand() }
-  }, [])
-
   const handleBackToMenu = () => {
     setScreen('menu')
     setSubScreen('context')
