@@ -24,7 +24,8 @@ export default function TripleCard({ card, index, revealed, isActive, onClick }:
                   ${isActive ? 'scale-105' : 'opacity-70'}`}
       onClick={onClick}
     >
-      <p className="text-purple-400 text-xs mb-1.5 tracking-wider uppercase">
+      <p className="text-xs mb-1.5 tracking-wider uppercase"
+        style={{ color: 'var(--text-secondary)' }}>
         {POSITION_LABELS[index]}
       </p>
 
@@ -32,12 +33,14 @@ export default function TripleCard({ card, index, revealed, isActive, onClick }:
         <div className={`card-inner ${revealed ? 'flipped' : ''}`}>
 
           {/* Рубашка */}
-          <div className="card-face rounded-xl overflow-hidden border border-purple-800">
+          <div className="card-face rounded-xl overflow-hidden border"
+            style={{ borderColor: 'var(--border-main)' }}>
             <img src={coverUrl} alt="Рубашка" className="w-full h-full object-cover"/>
           </div>
 
           {/* Лицо */}
-          <div className="card-face card-back rounded-xl overflow-hidden border border-purple-500">
+          <div className="card-face card-back rounded-xl overflow-hidden border"
+            style={{ borderColor: 'var(--border-main)' }}>
             <img
               src={imageUrl}
               alt={card.name_ru}
@@ -51,8 +54,9 @@ export default function TripleCard({ card, index, revealed, isActive, onClick }:
       {/* Название под картой */}
       {revealed && (
         <div className="mt-1.5 text-center">
-          <p className="text-white text-xs font-medium leading-tight">{card.name_ru}</p>
-          {card.reversed && <p className="text-rose-400 text-xs">перевёрнутая</p>}
+          <p className="text-xs font-medium leading-tight"
+            style={{ color: 'var(--text-primary)' }}>{card.name_ru}</p>
+          {card.reversed && <p className="text-rose-600 text-xs">перевёрнутая</p>}
         </div>
       )}
     </div>
