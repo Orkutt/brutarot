@@ -74,6 +74,44 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
             `Выбрано ${chosen.length} из ${needed} — выбери следующую`}
         </p>
       </div>
+      
+            {/* Слоты для выбранных карт (триплет) */}
+      {mode === 'triple' && (
+        <div className="flex justify-center gap-3 px-4 mt-2">
+          {Array.from({ length: 3 }).map((_, i) => {
+            const isFilled = i < chosen.length
+            return (
+              <div
+                key={i}
+                style={{
+                        borderColor: isFilled ? 'var(--border-accent)' : 'var(--tag-border)',
+                        background: isFilled ? 'var(--tag-bg)' : 'var(--bg-secondary)',
+                      }}
+                className={`
+                  w-16 h-24 rounded-xl border-2 border-dashed flex items-center
+                  justify-center transition-all duration-500 overflow-hidden
+                  ${isFilled
+                    ? ''
+                    : ''
+                  }
+                `}
+              >
+                {isFilled ? (
+                  <img
+                    src={coverUrl}
+                    alt="Выбранная карта"
+                    className="w-full h-full object-cover opacity-80"
+                  />
+                ) : (
+                  <span className="text-sm"
+                    style={{ color: 'var(--text-muted)' }}>{i + 1}</span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
 
       {/* Веер карт */}
       <div className="fan-section">
@@ -123,50 +161,15 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
         </div>
       </div>
 
-      {/* Слоты для выбранных карт (триплет) */}
-      {mode === 'triple' && (
-        <div className="flex justify-center gap-3 px-4 mt-2">
-          {Array.from({ length: 3 }).map((_, i) => {
-            const isFilled = i < chosen.length
-            return (
-              <div
-                key={i}
-                style={{
-                        borderColor: isFilled ? 'var(--border-accent)' : 'var(--tag-border)',
-                        background: isFilled ? 'var(--tag-bg)' : 'var(--bg-secondary)',
-                      }}
-                className={`
-                  w-16 h-24 rounded-xl border-2 border-dashed flex items-center
-                  justify-center transition-all duration-500 overflow-hidden
-                  ${isFilled
-                    ? ''
-                    : ''
-                  }
-                `}
-              >
-                {isFilled ? (
-                  <img
-                    src={coverUrl}
-                    alt="Выбранная карта"
-                    className="w-full h-full object-cover opacity-80"
-                  />
-                ) : (
-                  <span className="text-sm"
-                    style={{ color: 'var(--text-muted)' }}>{i + 1}</span>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      )}
+
 
       <style>{`
         .fan-section {
           flex: 1;
           display: flex;
-          align-items: center;
+          align-items: top;
           justify-content: center;
-          padding: 20px;
+          padding: 0px;
           perspective: 900px;
         }
 
@@ -174,7 +177,7 @@ export default function MixingScreen({ mode, onCardSelected, onBack }: Props) {
           position: relative;
           width: 220px;
           height: 280px;
-          margin-bottom: 100px; /* небольшой отступ вниз — веер рисуется от bottom */
+          margin-bottom: 200px; /* небольшой отступ вниз — веер рисуется от bottom */
         }
 
         .fan-card {

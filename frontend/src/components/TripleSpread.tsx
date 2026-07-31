@@ -76,9 +76,9 @@ export default function TripleSpread({ onBack }: Props) {
                   key={key}
                   onClick={() => handleContextSelect(key)}
                   style={{
-                    backgroundColor: context ? 'var(--accent-glow)' : 'var(--interp-bg)',
-                    color: context ? 'var(--text-primary)' : 'var(--text-muted)',
-                    borderColor: context ? 'var(--border-accent)' : 'var(--interp-border)',
+                    backgroundColor: isSelected ? 'var(--accent-glow)' : 'var(--interp-bg)',
+                    color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)',
+                    borderColor: isSelected ? 'var(--border-accent)' : 'var(--interp-border)',
                   }}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border
                               text-left text-sm transition-all duration-200 active:scale-95
@@ -90,7 +90,7 @@ export default function TripleSpread({ onBack }: Props) {
                   <span>{icon}</span>
                   <span className="leading-tight">{label}</span>
                   <span style={{
-                          backgroundColor: isSelected ? 'var(--text-primary)' : 'var(--slot-empty)',
+                          backgroundColor: isSelected ? 'var(--text-primary)' : 'var(--accent-glow)',
                         }}
                         className={`ml-auto w-2 h-2 rounded-full flex-shrink-0
                                     ${isSelected ? '' : ''}`}/>

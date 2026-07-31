@@ -6,3 +6,4 @@ spreads_cache.json
 __pycache__/
 *.pyc
 test.py
+frontend/.env.local

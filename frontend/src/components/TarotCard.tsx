@@ -19,13 +19,15 @@ export default function TarotCard({ card, flipped }: Props) {
       <div className={`card-inner ${flipped ? 'flipped' : ''}`}>
 
         {/* Рубашка — теперь реальное изображение cover.jpg */}
-        <div className="card-face rounded-2xl overflow-hidden border-2 border-purple-700">
+        <div className="card-face rounded-2xl overflow-hidden border-2"
+          style={{ borderColor: 'var(--border-main)' }}>
           <img src={coverUrl} alt="Рубашка" className="w-full h-full object-cover"/>
         </div>
 
         {/* Лицо карты */}
         <div className="card-face card-back rounded-2xl overflow-hidden border-2
-                        border-purple-500 shadow-lg shadow-purple-900/50">
+                        shadow-lg shadow-gray-900/50"
+                        style={{ borderColor: 'var(--border-accent)' }}>
           <img
             src={imageUrl}
             alt={card.name_ru}

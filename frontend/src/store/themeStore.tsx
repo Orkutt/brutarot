@@ -42,23 +42,23 @@ const THEME_VARS: Record<string, Record<string, string>> = {
     '--interp-border': 'rgba(67,56,202,0.5)',
   },
   day: {
-    '--bg-primary':    '#FBEBD5',   // слоновая кость
-    '--bg-secondary':  '#faebd7',   // antique white
-    '--bg-card':       '#fff8f0',
-    '--border-main':   '#d4a0a0',   // розово-коричневый
-    '--border-accent': '#c47a7a',   // розовый
-    '--text-primary':  '#3b1a0e',   // тёмно-коричневый
-    '--text-secondary':'#7a4a3a',   // коричневый средний
-    '--text-muted':    '#b08070',   // светло-коричневый
-    '--accent-main':   '#c47a7a',   // розовый
-    '--accent-light':  '#e8a0a0',   // светло-розовый
-    '--accent-glow':   'rgba(196,122,122,0.35)',
-    '--slot-empty':    '#f5e6d8',
-    '--tag-bg':        'rgba(196,122,122,0.15)',
-    '--tag-border':    'rgba(196,122,122,0.4)',
-    '--tag-text':      '#8b3a3a',
-    '--interp-bg':     'rgba(250,235,215,0.8)',
-    '--interp-border': 'rgba(212,160,160,0.5)',
+    '--bg-primary':    'rgba(255, 250, 245, 1)',
+    '--bg-secondary':  'rgba(250, 243, 224, 1)',
+    '--bg-card':       'rgba(255, 250, 245, 0.78)',
+    '--border-main':   'rgba(58, 58, 58, 0.12)',
+    '--border-accent': 'rgba(210, 96, 76, 0.28)',
+    '--text-primary':  'rgba(58, 58, 58, 1)',
+    '--text-secondary':'rgba(58, 58, 58, 0.78)',
+    '--text-muted':    'rgba(58, 58, 58, 0.52)',
+    '--accent-main':   'rgba(210, 96, 76, 1)',
+    '--accent-light':  '#rgba(232, 180, 163, 1)',
+    '--accent-glow':   'rgba(210, 96, 76, 0.22)',
+    '--slot-empty':    '#rgba(232, 180, 163, 0.14)',
+    '--tag-bg':        'rgba(232, 180, 163, 0.18)',
+    '--tag-border':    'rgba(210, 96, 76, 0.22)',
+    '--tag-text':      'rgba(210, 96, 76, 1)',
+    '--interp-bg':     'rgba(58, 58, 58, 0.05)',
+    '--interp-border': 'rgba(58, 58, 58, 0.14)',
   },
 }
 

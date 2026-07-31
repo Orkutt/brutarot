@@ -25,10 +25,10 @@ export default function CardInterpretation({ card }: Props) {
           {card.name_en}
         </p>
         <p className="text-purple-400 text-xs mt-1"
-          style={{ color: 'var(--text-secondary)' }}>
+          style={{ color: 'var(--text-primary)' }}>
           {card.arcana} · {card.elemental}
           {card.reversed && (
-            <span className="ml-2 text-rose-400">· Перевёрнутая</span>
+            <span className="ml-2 text-rose-600">· Перевёрнутая</span>
           )}
         </p>
       </div>
@@ -41,7 +41,7 @@ export default function CardInterpretation({ card }: Props) {
               key={kw}
               style={{
                     backgroundColor: 'var(--bg-secondary)',
-                    color: 'var(--accent-main)',
+                    color: 'var(--text-primary)',
                     borderColor: 'var(--border-main)'
                   }}
               className="px-2.5 py-0.5 rounded-full text-xs border"
@@ -57,11 +57,11 @@ export default function CardInterpretation({ card }: Props) {
         <div className="rounded-xl p-4 border"
         style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-main)' }}>
           <p className="text-xs uppercase tracking-wider mb-2"
-            style={{ color: 'var(--text-secondary)' }}>
+            style={{ color: 'var(--text-primary)' }}>
             Общее значение
           </p>
           <p className="text-sm leading-relaxed"
-            style={{ color: 'var(--text-muted)' }}>
+            style={{ color: 'var(--text-primary)' }}>
             {card.meaning_general}
           </p>
         </div>
@@ -72,13 +72,13 @@ export default function CardInterpretation({ card }: Props) {
         style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-main)' }}>
         {showContextLabel && (
           <p className="text-xs uppercase tracking-wider mb-1.5"
-            style={{ color: 'var(--text-secondary)' }}>
+            style={{ color: 'var(--text-primary)' }}>
             {contextLabel}
           </p>
 )}
         {/* min-h чтобы поле не сжималось на коротких текстах */}
         <p className="text-sm leading-relaxed min-h-[80px] whitespace-pre-line"
-          style={{ color: 'var(--text-muted)' }}>
+          style={{ color: 'var(--text-primary)' }}>
           {card.interpretation}
         </p>
       </div>

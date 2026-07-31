@@ -26,7 +26,7 @@ export default function ContextSelector({
   return (
     <div className="w-full max-w-sm mx-auto flex flex-col gap-4 mt-4">
       <p className="text-sm text-center"
-        style={{ color: 'var(--text-secondary)' }}
+        style={{ color: 'var(--text-primary)' }}
       >Выбери тему гадания</p>
 
       <div className="grid grid-cols-2 gap-2">
@@ -38,7 +38,7 @@ export default function ContextSelector({
               onClick={() => onChange(key as ContextKey)}
               style={{
                     backgroundColor: isSelected ? 'var(--accent-glow)' : 'var(--interp-bg)',
-                    color: isSelected ? 'var(--text-primary)' : 'var(--text-muted)',
+                    color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)',
                     borderColor: isSelected ? 'var(--border-accent)' : 'var(--interp-border)',
                   }}
               className={`
@@ -53,7 +53,7 @@ export default function ContextSelector({
               <span className="text-base">{icon}</span>
               <span className="leading-tight">{label}</span>
               <span style={{
-                          backgroundColor: isSelected ? 'var(--text-primary)' : 'var(--slot-empty)',
+                          backgroundColor: isSelected ? 'var(--text-primary)' : 'var(--accent-glow)',
                         }}
                     className={`
                 ml-auto w-2 h-2 rounded-full flex-shrink-0 transition-all
