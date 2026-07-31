@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Screen, ContextKey, CONTEXTS_SINGLE } from './types'
 import { useDeck } from './store/deckStore'
 import MainMenu from './components/MainMenu'
