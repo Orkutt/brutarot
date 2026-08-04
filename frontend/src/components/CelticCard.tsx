@@ -89,7 +89,7 @@ export default function CelticCard({ card, index, revealed, isSecondCard }: Prop
           onClick={() => setExpanded(false)}
           className="slide-up"
           style={{
-            position: 'fixed',
+            position: isSecondCard ? 'sticky' : 'fixed',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
@@ -108,8 +108,7 @@ export default function CelticCard({ card, index, revealed, isSecondCard }: Prop
               inset: 0,
               background: 'rgba(0,0,0,0.15)',
               zIndex: -1,
-              rotate: isSecondCard ? '-90deg' : '0deg',
-            }}
+              }}
           />
 
           {/* Увеличенная карта — всегда вертикальная */}
