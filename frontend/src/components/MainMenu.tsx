@@ -88,7 +88,7 @@ export default function MainMenu({ onSelect, onSettings }: Props) {
               Кельтский крест
             </p>
             <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}
-              >Универсальный расклад</p>
+              >Универсальный расклад на 10 карт</p>
           </div>
         </button>
 
