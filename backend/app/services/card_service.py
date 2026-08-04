@@ -168,3 +168,23 @@ def draw_triple(context: str = "", deck: str = "classic") -> dict:
         "llm_summary": "",
         "llm_package": llm_package,
     }
+
+def draw_celtic(deck: str = "classic") -> dict:
+    """Вытягивает 10 карт для расклада Кельтский крест."""
+    all_cards = get_all_cards()
+    chosen = random.sample(all_cards, 10)
+    cards_out = [normalize_card(c, random.random() > 0.5, "celtic", deck) for c in chosen]
+
+    # Комбо только в прямом порядке между соседними картами
+    combos = {}
+    for i in range(len(cards_out) - 1):
+        text = find_combo(cards_out[i]["id"], cards_out[i+1]["id"])
+        if text:
+            combos[f"{i+1}-{i+2}"] = text
+
+    return {
+        "cards": cards_out,
+        "combos": combos,
+        "llm_summary": "",
+        "llm_package": "",
+    }

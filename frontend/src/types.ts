@@ -53,4 +53,10 @@ export interface TripleSpreadResult {
 export type Screen = 'menu' | 'single' | 'triple' | 'celtic' | 'settings'
 
 // Режим расклада — передаём в MixingScreen
-export type SpreadMode = 'single' | 'triple'
+export type SpreadMode = 'single' | 'triple' | 'celtic'
+
+export interface CelticSpreadResult {
+  cards: TarotCard[]
+  combos: Record<string, string>
+  llm_summary: string
+}

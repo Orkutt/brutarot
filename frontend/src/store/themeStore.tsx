@@ -15,7 +15,7 @@ export const THEMES: ThemeInfo[] = [
   },
   {
     key: 'day',
-    name: 'Знойный день',
+    name: 'Утро в оазисе',
     description: 'Светлая тема: слоновая кость, розовый, тёмно-коричневый',
   },
 ]

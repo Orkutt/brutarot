@@ -109,3 +109,102 @@ async def get_llm_summary(cards: list[dict], combos: dict, context: str) -> str:
         data = response.json()
 
     return data["choices"][0]["message"]["content"].strip()
+
+
+CELTIC_POSITION_NAMES = [
+    "Ситуация",
+    "Влияние",
+    "Подсказка",
+    "Истоки",
+    "Прошлое",
+    "Будущее",
+    "Вы",
+    "Внешние факторы",
+    "Надежды и опасения",
+    "Итог",
+]
+
+CELTIC_POSITION_DESC = [
+    "Описывает текущую ситуацию, суть вопроса.",
+    "Силы, влияющие на ситуацию извне. Препятствия или помощь.",
+    "Совет карт: как лучше действовать.",
+    "Скрытые причины ситуации, подсознательные установки.",
+    "События прошлого, которые привели к текущей ситуации.",
+    "Наиболее вероятное развитие событий в ближайшее время.",
+    "Ваше отношение к ситуации, страхи, надежды, сомнения.",
+    "Влияние других людей, обстоятельств, среды.",
+    "Ваши мечты и страхи относительно ситуации.",
+    "Финальный результат по текущему сценарию.",
+]
+
+
+def build_celtic_prompt(
+    cards: list[dict],
+    combos: dict,
+    cross_request: str
+) -> str:
+    lines = [
+        f"Представь, что ты — мудрый таролог‑наставник. Выражаешься мягко и загадочно."
+        f"Проведи расклад «Кельтский Крест» на вопрос: {cross_request}\n",
+        "Карты расклада:\n",
+    ]
+
+    for i, card in enumerate(cards):
+        pos_name = CELTIC_POSITION_NAMES[i]
+        pos_desc = CELTIC_POSITION_DESC[i]
+        rev = "перевёрнутая" if card["reversed"] else "прямая"
+        name = f"{card['name_ru']} ({card['name_en']})"
+        general = card.get("meaning_general", "")
+
+        lines.append(f"Позиция {i+1} «{pos_name}»: {name}, {rev}.")
+        lines.append(f"Роль позиции: {pos_desc}")
+        lines.append(f"Значение карты: {general}")
+
+        combo_key = f"{i+1}-{i+2}"
+        if combo_key in combos:
+            lines.append(f"Взаимодействие со следующей картой: {combos[combo_key]}")
+        lines.append("")
+
+    lines.append(
+        "Для каждой карты дай детальное толкование для её позиции (2–3 предложения) "
+        "и связь с общим вопросом (1–2 предложения).\n\n"
+        "В конце предоставь:\n"
+        "— Общий вывод (4–5 предложений) с тремя ключевыми моментами: "
+        "«Что оставить», «Что изменить», «На что обратить особое внимание».\n"
+        "— Ключевой совет в формате: «Действуй так: [действие]. "
+        "Причина: [почему]. Предостережение: [чего избегать]. Причина: [почему]».\n"
+        "— 1–2 потенциальные опасности или скрытые факторы.\n\n"
+        "Обрати внимание на Старшие Арканы в ключевых позициях. "
+        "Для Младших Арканов укажи стихию (Кубки — вода, Мечи — воздух, "
+        "Пентакли — земля, Жезлы — огонь) и её влияние на толкование. "
+        "Учитывай взаимодействия между картами."
+    )
+
+    return "\n".join(lines)
+
+
+async def get_celtic_summary(
+    cards: list[dict],
+    combos: dict,
+    cross_request: str
+) -> str:
+    token = await get_access_token()
+    prompt = build_celtic_prompt(cards, combos, cross_request)
+
+    async with httpx.AsyncClient(verify=False) as client:
+        response = await client.post(
+            GIGACHAT_API_URL,
+            headers={"Authorization": f"Bearer {token}",
+                     "Content-Type": "application/json"},
+            json={
+                "model": "GigaChat",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.85,
+                "max_tokens": 1500,  # кельтский крест длиннее
+            },
+            timeout=60.0,
+        )
+        response.raise_for_status()
+        data = response.json()
+
+    return data["choices"][0]["message"]["content"].strip()

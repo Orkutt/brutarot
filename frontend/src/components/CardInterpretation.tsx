@@ -68,21 +68,22 @@ export default function CardInterpretation({ card }: Props) {
       )}
 
       {/* Интерпретация по контексту — большое поле, текст может быть объёмным */}
+      {showContextLabel && (
       <div className="rounded-xl p-4 border"
         style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-main)' }}>
-        {showContextLabel && (
+        
           <p className="text-xs uppercase tracking-wider mb-1.5"
             style={{ color: 'var(--text-primary)' }}>
             {contextLabel}
           </p>
-)}
+
         {/* min-h чтобы поле не сжималось на коротких текстах */}
         <p className="text-sm leading-relaxed min-h-[80px] whitespace-pre-line"
           style={{ color: 'var(--text-primary)' }}>
           {card.interpretation}
         </p>
       </div>
-
+      )}
     </div>
   )
 }

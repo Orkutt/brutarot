@@ -1,8 +1,8 @@
 # app/routers/cards.py
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
-from app.services.card_service import draw_random_card, draw_triple, get_all_cards
-from app.services.gigachat_service import get_llm_summary
+from app.services.card_service import draw_random_card, draw_triple, draw_celtic, get_all_cards
+from app.services.gigachat_service import get_llm_summary, get_celtic_summary
 from app.services.cache_service import get_cached, set_cached
 from app.bot import send_spread_result
 from app.bot_instance import get_bot              # ← из синглтона, не из main
@@ -74,3 +74,27 @@ async def send_result(req: SendResultRequest):
 @router.get("/cards")
 def list_cards():
     return {"total": len(get_all_cards()), "cards": get_all_cards()}
+
+
+@router.get("/draw-celtic")
+def draw_celtic_endpoint(deck: str = Query(default="classic")):
+    try:
+        return draw_celtic(deck=deck)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class CelticInterpretRequest(BaseModel):
+    cards: list[dict]
+    combos: dict[str, str]
+    cross_request: str
+
+
+@router.post("/interpret-celtic")
+async def interpret_celtic(req: CelticInterpretRequest):
+    try:
+        # Кэш с учётом запроса пользователя не делаем — запросы уникальны
+        summary = await get_celtic_summary(req.cards, req.combos, req.cross_request)
+        return {"summary": summary}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка LLM: {e}")

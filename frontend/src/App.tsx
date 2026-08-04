@@ -10,6 +10,7 @@ import CardInterpretation from './components/CardInterpretation'
 import TripleSpread from './components/TripleSpread'
 import DeckSelector from './components/DeckSelector'
 import { useDrawCard } from './hooks/useDrawCard'
+import CelticSpread from './components/CelticSpread'
 
 type SingleSubScreen = 'context' | 'mixing' | 'spread'
 
@@ -57,25 +58,9 @@ export default function App() {
     return <TripleSpread onBack={handleBackToMenu} />
   }
 
-  // Кельтский крест — заглушка
+  // Кельтский крест
   if (screen === 'celtic') {
-    return (
-      <div className="min-h-screen flex flex-col items-center
-                      justify-center gap-4"
-            style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-        <p className="text-2xl">✝</p>
-        <p className="text-purple-300 text-lg font-medium">Кельтский крест</p>
-        <p className="text-slate-500 text-sm">Раздел в разработке</p>
-        <button
-          onClick={handleBackToMenu}
-          className="mt-4 px-6 py-2 rounded-xl border border-slate-700
-                     text-slate-400 text-sm hover:border-purple-700 hover:text-purple-300
-                     transition-all"
-        >
-          ← Назад
-        </button>
-      </div>
-    )
+    return <CelticSpread onBack={handleBackToMenu} />
   }
 
   // Одна карта
